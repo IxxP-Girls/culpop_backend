@@ -1,4 +1,4 @@
 package com.ixxp.culpop.mapper;
 
-public class PostMapper {
+public interface PostMapper {
 }
