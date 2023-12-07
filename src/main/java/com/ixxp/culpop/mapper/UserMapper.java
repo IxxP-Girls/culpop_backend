@@ -9,4 +9,5 @@ import java.util.List;
 public interface UserMapper {
     void insertUser(User user);
     List<User> selectUserEmail(String email);
+    User selectEmail(String email);
 }

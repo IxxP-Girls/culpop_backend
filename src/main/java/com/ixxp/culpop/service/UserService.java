@@ -1,8 +1,11 @@
 package com.ixxp.culpop.service;
 
+import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.mapper.UserMapper;
+import com.ixxp.culpop.util.jwtutil.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     // 회원가입
     public void signup(UserSignupRequest userSignupRequest) {
@@ -25,5 +29,27 @@ public class UserService {
 
         User user = new User(username, email, pwd);
         userMapper.insertUser(user);
+    }
+
+    // 로그인
+    public void login(UserLoginRequest userLoginRequest, HttpServletResponse response) {
+        String email = userLoginRequest.getEmail();
+        String pwd = userLoginRequest.getPwd();
+
+        if (userMapper.selectUserEmail(email).isEmpty()) {
+            throw new IllegalArgumentException("해당 email 이 존재하지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(pwd, userMapper.selectEmail(email).getPwd())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // accessToken, refreshToken 생성
+        String accessToken = jwtUtil.createAccessToken(email);
+        String refreshToken = jwtUtil.createRefreshToken(email);
+
+        // Header 로 토큰 반환
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, refreshToken);
     }
 }

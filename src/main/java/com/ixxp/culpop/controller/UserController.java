@@ -1,8 +1,10 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
 import com.ixxp.culpop.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,4 +28,11 @@ public class UserController {
         return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
     }
 
+    // 로그인
+    @PostMapping("login")
+    public ResponseEntity<StatusResponse> login(@RequestBody @Valid UserLoginRequest userLoginRequest, HttpServletResponse response) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "로그인 성공");
+        userService.login(userLoginRequest, response);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+    }
 }
