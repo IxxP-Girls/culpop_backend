@@ -1,4 +1,4 @@
 package com.ixxp.culpop.mapper;
 
-public class PopupMapper {
+public interface PopupMapper {
 }
