@@ -9,4 +9,7 @@
     <select id="selectUserEmail" parameterType="String" resultType="user">
         SELECT * FROM user WHERE email=#{email}
     </select>
+    <select id="selectEmail" parameterType="String" resultType="user">
+        SELECT * FROM user WHERE email=#{email}
+    </select>
 </mapper>
