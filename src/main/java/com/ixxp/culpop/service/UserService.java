@@ -53,9 +53,11 @@ public class UserService {
         }
 
         // accessToken, refreshToken 생성
-        String token = jwtUtil.createToken(email, user.getRole());
+        String accessToken = jwtUtil.createAccessToken(email, user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(email, user.getRole());
 
         // Header 로 토큰 반환
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, refreshToken);
     }
 }

@@ -21,9 +21,12 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_REFRESH = "RefreshToken"; // 리프레시 토큰 Header 키
     public static final String AUTHORIZATION_KEY = "auth";
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    public static final String BEARER_PREFIX = "Bearer "; // 액세스 토큰 식별자 (7자)
+    public static final String REFRESH_PREFIX = "Refresh "; // 리프레시 토큰 식별자 (8자)
+    public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
+    public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -36,8 +39,8 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // header 토큰을 가져오기
-    public String resolveToken(HttpServletRequest request) {
+    // header Access 토큰을 가져오기
+    public String getAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
@@ -45,11 +48,20 @@ public class JwtUtil {
         return null;
     }
 
+    // header Refresh 토큰을 가져오기
+    public String getRefreshToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_REFRESH);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(REFRESH_PREFIX)) {
+            return bearerToken.substring(8);
+        }
+        return null;
+    }
+
     // 토큰 생성
-    public String createToken(String email, UserRoleEnum role) {
+    public String createToken(String email, UserRoleEnum role, long TOKEN_TIME, String prefix) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
+        return prefix +
                 Jwts.builder()
                         .setSubject(email)
                         .claim(AUTHORIZATION_KEY, role)
@@ -57,6 +69,16 @@ public class JwtUtil {
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
+    }
+
+    //accessToken 생성
+    public String createAccessToken(String email, UserRoleEnum role) {
+        return createToken(email, role, ACCESS_TOKEN_TIME, BEARER_PREFIX);
+    }
+
+    //refreshToken 생성
+    public String createRefreshToken(String email, UserRoleEnum role) {
+        return createToken(email, role, REFRESH_TOKEN_TIME, REFRESH_PREFIX);
     }
 
     // 토큰 검증
