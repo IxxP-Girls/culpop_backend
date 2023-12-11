@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class UserController {
     }
 
     // 로그인
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<StatusResponse> login(@RequestBody @Valid UserLoginRequest userLoginRequest, HttpServletResponse response) {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "로그인 성공");
         userService.login(userLoginRequest, response);
