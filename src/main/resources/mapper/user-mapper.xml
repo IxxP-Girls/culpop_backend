@@ -12,4 +12,7 @@
     <select id="selectEmail" parameterType="String" resultType="user">
         SELECT * FROM user WHERE email=#{email}
     </select>
+    <update id="updateProfile" parameterType="user">
+        UPDATE user SET username=#{username} WHERE id=#{userId}
+    </update>
 </mapper>

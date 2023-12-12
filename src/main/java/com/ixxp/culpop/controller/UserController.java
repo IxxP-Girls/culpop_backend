@@ -1,14 +1,17 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.user.ProfileUpdateRequest;
 import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
+import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,4 +35,14 @@ public class UserController {
         userService.login(userLoginRequest, response);
         return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
+
+    // 프로필 수정
+    @PatchMapping("/profile")
+    public ResponseEntity<StatusResponse> updateProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestBody ProfileUpdateRequest profileUpdateRequest) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "프로필 수정 완료");
+        userService.updateProfile(userDetails.getUser().getId(), profileUpdateRequest);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+    }
+
 }
