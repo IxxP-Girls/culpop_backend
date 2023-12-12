@@ -81,6 +81,10 @@ public class JwtUtil {
         return createToken(email, role, REFRESH_TOKEN_TIME, REFRESH_PREFIX);
     }
 
+    // admin token 생성
+    public String createAdminToken(String email, UserRoleEnum role) {
+        return createToken(email, role, ACCESS_TOKEN_TIME, BEARER_PREFIX);
+    }
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
@@ -101,5 +105,19 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    // 관리자 토큰 확인
+    public boolean isAdminToken(String token) {
+        Claims claims;
+        if (token != null) {
+            if (validateToken(token)) {
+                claims = getUserInfoFromToken(token);
+                return ((claims.get("auth").toString()).equals("ADMIN"));
+            } else {
+                throw new SecurityException();
+            }
+        }
+        throw new SecurityException();
     }
 }

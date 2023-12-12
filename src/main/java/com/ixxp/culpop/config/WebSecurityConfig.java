@@ -1,5 +1,6 @@
 package com.ixxp.culpop.config;
 
+import com.ixxp.culpop.security.AdminDetailsServiceImpl;
 import com.ixxp.culpop.security.UserDetailsServiceImpl;
 import com.ixxp.culpop.util.jwtutil.JwtAuthFilter;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebSecurityConfig implements WebMvcConfigurer {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AdminDetailsServiceImpl adminDetailsService;
 
     // 패스워드 암호화
     @Bean
@@ -41,10 +43,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 authorize -> authorize
                                 .requestMatchers("/users/signup").permitAll()
                                 .requestMatchers("/users/login").permitAll()
+                                .requestMatchers("/admin/signup").permitAll()
+                                .requestMatchers("/admin/login").permitAll()
                         .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthFilter(jwtUtil, userDetailsService, adminDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
