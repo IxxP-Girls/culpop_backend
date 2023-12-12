@@ -11,4 +11,5 @@ public interface UserMapper {
     List<User> selectUserEmail(String email);
     User selectEmail(String email);
     void updateProfile(int userId, String username);
+    User getProfile(int userId);
 }

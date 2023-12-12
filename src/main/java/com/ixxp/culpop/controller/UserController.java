@@ -1,6 +1,7 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.user.ProfileResponse;
 import com.ixxp.culpop.dto.user.ProfileUpdateRequest;
 import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
@@ -45,4 +46,10 @@ public class UserController {
         return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
 
+    // 프로필 조회
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId());
+        return new ResponseEntity<>(profileResponse, HttpStatus.OK);
+    }
 }

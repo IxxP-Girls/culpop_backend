@@ -65,4 +65,10 @@ public class UserService {
     public void updateProfile(int userId, ProfileUpdateRequest profileUpdateRequest) {
         userMapper.updateProfile(userId, profileUpdateRequest.getUsername());
     }
+
+    // 프로필 조회
+    public ProfileResponse getProfile(int userId) {
+        User user = userMapper.getProfile(userId);
+        return new ProfileResponse(user);
+    }
 }
