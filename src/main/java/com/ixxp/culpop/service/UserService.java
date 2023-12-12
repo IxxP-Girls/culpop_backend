@@ -60,4 +60,15 @@ public class UserService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
         response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, refreshToken);
     }
+
+    // 프로필 수정
+    public void updateProfile(int userId, ProfileUpdateRequest profileUpdateRequest) {
+        userMapper.updateProfile(userId, profileUpdateRequest.getUsername());
+    }
+
+    // 프로필 조회
+    public ProfileResponse getProfile(int userId) {
+        User user = userMapper.getProfile(userId);
+        return new ProfileResponse(user);
+    }
 }
