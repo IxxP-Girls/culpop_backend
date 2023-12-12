@@ -17,10 +17,14 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String pwd;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
 
-    public User(String username, String email, String pwd) {
+    public User(String username, String email, String pwd, UserRoleEnum role) {
         this.username = username;
         this.email = email;
         this.pwd = pwd;
+        this.role = role;
     }
 }
