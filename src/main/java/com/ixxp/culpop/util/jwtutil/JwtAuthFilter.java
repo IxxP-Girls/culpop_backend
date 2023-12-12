@@ -2,6 +2,7 @@ package com.ixxp.culpop.util.jwtutil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ixxp.culpop.dto.SecurityExceptionDto;
+import com.ixxp.culpop.security.AdminDetailsServiceImpl;
 import com.ixxp.culpop.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -25,6 +26,8 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AdminDetailsServiceImpl adminDetailsService;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,6 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(token != null) {
             if(!jwtUtil.validateToken(token)){
                 jwtExceptionHandler(response, "토큰 값이 유효하지 않습니다", HttpStatus.UNAUTHORIZED.value());
+                return;
+            }
+            if (jwtUtil.isAdminToken(token)) {
+                Claims info = jwtUtil.getUserInfoFromToken(token);
+                setAdminAuthentication(info.getSubject());
                 return;
             }
             Claims info = jwtUtil.getUserInfoFromToken(token);
@@ -64,6 +72,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     public Authentication createAuthentication(String email) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+    // 관리자 인증 설정
+    public void setAdminAuthentication(String email) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication authentication = createAdminAuthentication(email);
+        context.setAuthentication(authentication);
+
+        SecurityContextHolder.setContext(context);
+    }
+
+    // 관리자 인증 객체 생성
+    public Authentication createAdminAuthentication(String email) {
+        UserDetails adminDetails = adminDetailsService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(adminDetails, null, adminDetails.getAuthorities());
     }
 
     public void jwtExceptionHandler(HttpServletResponse response, String msg, int statusCode) {
