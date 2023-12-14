@@ -42,10 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (jwtUtil.isAdminToken(token)) {
                 Claims info = jwtUtil.getUserInfoFromToken(token);
                 setAdminAuthentication(info.getSubject());
-                return;
+            } else {
+                Claims info = jwtUtil.getUserInfoFromToken(token);
+                setAuthentication(info.getSubject());
             }
-            Claims info = jwtUtil.getUserInfoFromToken(token);
-            setAuthentication(info.getSubject());
         }
 
         if(refreshToken != null) {
