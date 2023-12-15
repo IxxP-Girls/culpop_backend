@@ -16,6 +16,29 @@
             <result property="image" column="image" />
         </collection>
     </resultMap>
+    <resultMap id="popupDetail" type="popup">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="time" column="time" />
+        <result property="address" column="address" />
+        <result property="startDate" column="startDate" />
+        <result property="endDate" column="endDate" />
+        <result property="latitude" column="latitude" />
+        <result property="longitude" column="longitude" />
+        <result property="notice" column="notice" />
+        <result property="storeUrl" column="storeUrl" />
+        <result property="snsUrl" column="snsUrl" />
+
+        <collection property="store" javaType="Store">
+            <id property="id" column="storeId" />
+            <result property="storeName" column="storeName" />
+            <result property="image" column="image" />
+        </collection>
+        <collection property="admin" javaType="Admin">
+            <id property="id" column="adminId" />
+        </collection>
+    </resultMap>
     <insert id="insertPopup" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO popup (adminId, storeId, title, content, time, address, startDate, endDate, latitude, longitude, notice, storeUrl, snsUrl, parking, fee, noKids, pet, wifi, viewCount)
         VALUES (#{admin.id}, #{store.id}, #{title}, #{content}, #{time}, #{address}, #{startDate}, #{endDate}, #{latitude}, #{longitude}, #{notice}, #{storeUrl}, #{snsUrl}, #{parking}, #{fee}, #{noKids}, #{pet}, #{wifi}, #{viewCount})
@@ -54,4 +77,15 @@
         ORDER BY p.endDate
         LIMIT #{offset}, #{size};
     </select>
+    <select id="selectPopupDetail" parameterType="int" resultMap="popupDetail">
+        SELECT * FROM popup p
+        LEFT JOIN store s ON p.storeId = s.id
+        WHERE p.id=#{id}
+    </select>
+    <select id="selectViewCount" parameterType="int">
+        SELECT viewCount FROM popup WHERE id = #{popupId};
+    </select>
+    <update id="updateViewCount" parameterType="int">
+        UPDATE popup SET viewCount = viewCount+1 WHERE id=#{popupId}
+    </update>
 </mapper>

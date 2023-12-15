@@ -12,4 +12,7 @@ public interface PopupMapper {
     List<Popup> selectPopupMain(String date);
     List<Popup> selectCarousel();
     List<Popup> selectPopupList(String area,String startDate, String endDate, int offset, int size);
+    Popup selectPopupDetail(int popupId);
+    int selectViewCount(int popupId);
+    void updateViewCount(int popupId);
 }
