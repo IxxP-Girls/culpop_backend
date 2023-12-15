@@ -11,4 +11,5 @@ public interface PopupMapper {
     Popup selectPopup(int popupId);
     List<Popup> selectPopupMain(String date);
     List<Popup> selectPopupList();
+    List<Popup> selectPopupList(String area,String startDate, String endDate, int offset, int size);
 }

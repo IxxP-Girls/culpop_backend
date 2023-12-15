@@ -104,6 +104,31 @@ public class PopupService {
         return popupCarouselResponses;
     }
 
+    // ListPage 팝업 조회
+    public List<PopupResponse> getPopupList(User user, String area, String startDate, String endDate, int page, int size) {
+        int offset = (page - 1) * size;
+        List<Popup> popups = popupMapper.selectPopupList(area, startDate, endDate, offset, size);
+        List<PopupResponse> popupResponses = new ArrayList<>();
+        for (Popup popup : popups) {
+            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
+            String image = jsonArray.getString(0);
+
+            String fullAddress = popup.getAddress();
+            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
+
+            String start = popup.getStartDate().replace("-", ".");
+            String end = popup.getEndDate().replace("-", ".");
+
+            boolean likeCheck = false;
+            if (user != null) {
+                likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
+            }
+
+            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, start, end, likeCheck));
+        }
+        return popupResponses;
+    }
+
     // 팝업 좋아요
     public void likePopup(User user, int popupId) {
         Popup popup = popupMapper.selectPopup(popupId);

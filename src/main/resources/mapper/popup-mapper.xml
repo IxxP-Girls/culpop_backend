@@ -42,4 +42,16 @@
         ORDER BY likeCount DESC
         LIMIT 6;
     </select>
+    <select id="selectPopupList" resultMap="popupResult">
+        SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image
+        FROM popup p
+        LEFT JOIN popuplike l ON p.id = l.popupId
+        LEFT JOIN store s ON p.storeId = s.id
+        WHERE (#{area} = 'all' OR p.address LIKE CONCAT('%', #{area}, '%'))
+            AND p.startDate &lt;= #{endDate}
+            AND p.endDate &gt;= #{startDate}
+        GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
+        ORDER BY p.endDate
+        LIMIT #{offset}, #{size};
+    </select>
 </mapper>

@@ -47,6 +47,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 .requestMatchers("/admin/signup").permitAll()
                                 .requestMatchers("/admin/login").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/popup").permitAll()
+                                .requestMatchers("/popup/popups").permitAll()
                                 .requestMatchers("/popup/carousel").permitAll()
                         .anyRequest().authenticated()
         );

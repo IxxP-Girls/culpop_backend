@@ -46,6 +46,19 @@ public class PopupController {
         return new ResponseEntity<>(popupService.getPopupCarousel(), HttpStatus.OK);
     }
 
+    // ListPage 팝업 조회
+    @GetMapping("/popups")
+    public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestParam("area") String area,
+                                                            @RequestParam("startDate") String startDate,
+                                                            @RequestParam("endDate") String endDate,
+                                                            @RequestParam("page") int page,
+                                                            @RequestParam("size") int size){
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        List<PopupResponse> popupResponses = popupService.getPopupList(user, area, startDate, endDate, page, size);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
+
     // 팝업 좋아요
     @PostMapping("/{popupId}/like")
     public ResponseEntity<StatusResponse> likePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
