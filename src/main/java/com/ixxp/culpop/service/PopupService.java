@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
 import com.ixxp.culpop.dto.popup.PopupCreateRequest;
+import com.ixxp.culpop.dto.popup.PopupResponse;
 import com.ixxp.culpop.entity.*;
 import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,30 @@ public class PopupService {
                 popupTagMapper.insertPopupTag(popupTag);
             }
         }
+    }
+
+    // MainPage 팝업 조회
+    public List<PopupResponse> getPopup(User user, String date) {
+        List<Popup> popups = popupMapper.selectPopupMain(date);
+        List<PopupResponse> popupResponses = new ArrayList<>();
+        for (Popup popup : popups) {
+            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
+            String image = jsonArray.getString(0);
+
+            String fullAddress = popup.getAddress();
+            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
+
+            String startDate = popup.getStartDate().replace("-", ".");
+            String endDate = popup.getEndDate().replace("-", ".");
+
+            boolean likeCheck = false;
+            if (user != null) {
+                likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
+            }
+
+            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck));
+        }
+        return popupResponses;
     }
 
     // MainPage Carousel 조회

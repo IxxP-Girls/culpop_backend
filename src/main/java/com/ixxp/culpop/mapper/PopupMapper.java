@@ -9,5 +9,6 @@ import java.util.List;
 public interface PopupMapper {
     void insertPopup(Popup popup);
     Popup selectPopup(int popupId);
+    List<Popup> selectPopupMain(String date);
     List<Popup> selectPopupList();
 }

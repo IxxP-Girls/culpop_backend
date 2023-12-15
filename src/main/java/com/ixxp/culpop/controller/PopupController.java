@@ -3,6 +3,8 @@ package com.ixxp.culpop.controller;
 import com.ixxp.culpop.dto.StatusResponse;
 import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
 import com.ixxp.culpop.dto.popup.PopupCreateRequest;
+import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.security.AdminDetailsImpl;
 import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.PopupService;
@@ -27,6 +29,15 @@ public class PopupController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 등록 완료");
         popupService.createPopup(adminDetails.getAdmin(), popupCreateRequest);
         return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+    }
+
+    // MainPage 팝업 조회
+    @GetMapping()
+    public ResponseEntity<List<PopupResponse>> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestParam("date") String date) {
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        List<PopupResponse> popupResponses = popupService.getPopup(user, date);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 
     // MainPage Carousel 조회
