@@ -86,7 +86,7 @@ public class PopupService {
             throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
         }
 
-        if (popupLikeMapper.checkPopupLike(user.getId())) {
+        if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
             throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
         }
 
@@ -101,7 +101,7 @@ public class PopupService {
             throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
         }
 
-        if (!popupLikeMapper.checkPopupLike(user.getId())) {
+        if (!popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
             throw new IllegalArgumentException("popup 좋아요를 누르지 않았습니다.");
         }
 

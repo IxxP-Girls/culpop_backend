@@ -10,7 +10,7 @@
         SELECT * FROM popuplike WHERE popupId=#{popup.id}
     </select>
     <select id="checkPopupLike" parameterType="int" resultType="boolean">
-        SELECT IF(COUNT(*) = 1, 1, 0) FROM popuplike WHERE userId=#{user.id}
+        SELECT IF(COUNT(*) = 1, 1, 0) FROM popuplike WHERE userId=#{userId} and popupId=#{popupId}
     </select>
     <delete id="deletePopupLike">
         DELETE FROM popuplike WHERE userId =#{user.id} and popupId=#{popup.id}
