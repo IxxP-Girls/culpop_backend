@@ -87,7 +87,7 @@ public class PopupService {
     // MainPage Carousel 조회
     public List<PopupCarouselResponse> getPopupCarousel() {
         // 좋아요 많은 순 6개만 가져오기
-        List<Popup> popups = popupMapper.selectPopupList();
+        List<Popup> popups = popupMapper.selectCarousel();
         List<PopupCarouselResponse> popupCarouselResponses = new ArrayList<>();
         for (Popup popup : popups) {
             org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());

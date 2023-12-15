@@ -10,6 +10,6 @@ public interface PopupMapper {
     void insertPopup(Popup popup);
     Popup selectPopup(int popupId);
     List<Popup> selectPopupMain(String date);
-    List<Popup> selectPopupList();
+    List<Popup> selectCarousel();
     List<Popup> selectPopupList(String area,String startDate, String endDate, int offset, int size);
 }

@@ -33,7 +33,7 @@
         ORDER BY p.endDate
         LIMIT 8;
     </select>
-    <select id="selectPopupList" resultMap="popupResult">
+    <select id="selectCarousel" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, COUNT(l.popupId) AS likeCount
         FROM popup p
         LEFT JOIN popuplike l ON p.id = l.popupId
