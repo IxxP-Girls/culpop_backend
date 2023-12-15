@@ -7,4 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface PopupLikeMapper {
     void insertPopupLike(PopupLike popupLike);
     boolean checkPopupLike(int userId);
+    void deletePopupLike(PopupLike popupLike);
 }

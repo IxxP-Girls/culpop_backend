@@ -28,10 +28,19 @@ public class PopupController {
 
     // 팝업 좋아요
     @PostMapping("/{popupId}/like")
-    public ResponseEntity<StatusResponse> likePopup (@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<StatusResponse> likePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                      @PathVariable int popupId) {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 좋아요 완료");
         popupService.likePopup(userDetails.getUser(), popupId);
         return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+    }
+
+    // 팝업 좋아요 취소
+    @DeleteMapping("/{popupId}/unlike")
+    private ResponseEntity<StatusResponse> unlikePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                       @PathVariable int popupId) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
+        popupService.unlikePopup(userDetails.getUser(), popupId);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
 }

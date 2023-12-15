@@ -69,4 +69,19 @@ public class PopupService {
         PopupLike popupLike = new PopupLike(user, popup);
         popupLikeMapper.insertPopupLike(popupLike);
     }
+
+    // 팝업 좋아요 취소
+    public void unlikePopup(User user, int popupId) {
+        Popup popup = popupMapper.selectPopup(popupId);
+        if (popup == null) {
+            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
+        }
+
+        if (!popupLikeMapper.checkPopupLike(user.getId())) {
+            throw new IllegalArgumentException("popup 좋아요를 누르지 않았습니다.");
+        }
+
+        PopupLike popupLike = new PopupLike(user, popup);
+        popupLikeMapper.deletePopupLike(popupLike);
+    }
 }
