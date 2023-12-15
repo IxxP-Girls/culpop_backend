@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ixxp.culpop.mapper.PopupLikeMapper">
+    <insert id="insertPopupLike" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO popuplike (userId, popupId) VALUES (#{user.id}, #{popup.id})
+    </insert>
+    <select id="selectPopupLike" parameterType="int" resultType="popuplike">
+        SELECT * FROM popuplike WHERE popupId=#{popup.id}
+    </select>
+    <select id="checkPopupLike" parameterType="int" resultType="boolean">
+        SELECT IF(COUNT(*) = 1, 1, 0) FROM popuplike WHERE userId=#{user.id}
+    </select>
+</mapper>

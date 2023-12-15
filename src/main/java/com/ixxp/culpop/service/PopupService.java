@@ -4,17 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ixxp.culpop.dto.popup.PopupCreateRequest;
 import com.ixxp.culpop.entity.*;
-import com.ixxp.culpop.mapper.PopupMapper;
-import com.ixxp.culpop.mapper.PopupTagMapper;
-import com.ixxp.culpop.mapper.StoreMapper;
-import com.ixxp.culpop.mapper.TagMapper;
+import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +16,7 @@ public class PopupService {
     private final StoreMapper storeMapper;
     private final TagMapper tagMapper;
     private final PopupTagMapper popupTagMapper;
+    private final PopupLikeMapper popupLikeMapper;
 
     // 팝업 등록
     public void createPopup(Admin admin, PopupCreateRequest popupCreateRequest) {
@@ -59,5 +53,20 @@ public class PopupService {
                 popupTagMapper.insertPopupTag(popupTag);
             }
         }
+    }
+
+    // 팝업 좋아요
+    public void likePopup(User user, int popupId) {
+        Popup popup = popupMapper.selectPopup(popupId);
+        if (popup == null) {
+            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
+        }
+
+        if (popupLikeMapper.checkPopupLike(user.getId())) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+        }
+
+        PopupLike popupLike = new PopupLike(user, popup);
+        popupLikeMapper.insertPopupLike(popupLike);
     }
 }

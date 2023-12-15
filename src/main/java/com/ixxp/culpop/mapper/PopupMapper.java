@@ -6,4 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface PopupMapper {
     void insertPopup(Popup popup);
+    Popup selectPopup(int popupId);
 }
