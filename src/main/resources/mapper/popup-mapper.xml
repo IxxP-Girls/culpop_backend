@@ -3,11 +3,33 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.PopupMapper">
+    <resultMap id="popupResult" type="popup">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="address" column="address" />
+        <result property="startDate" column="startDate" />
+        <result property="endDate" column="endDate" />
+
+        <collection property="store" javaType="Store">
+            <id property="id" column="storeId" />
+            <result property="storeName" column="storeName" />
+            <result property="image" column="image" />
+        </collection>
+    </resultMap>
     <insert id="insertPopup" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO popup (adminId, storeId, title, content, time, address, startDate, endDate, latitude, longitude, notice, storeUrl, snsUrl, parking, fee, noKids, pet, wifi, viewCount)
         VALUES (#{admin.id}, #{store.id}, #{title}, #{content}, #{time}, #{address}, #{startDate}, #{endDate}, #{latitude}, #{longitude}, #{notice}, #{storeUrl}, #{snsUrl}, #{parking}, #{fee}, #{noKids}, #{pet}, #{wifi}, #{viewCount})
     </insert>
     <select id="selectPopup" parameterType="int" resultType="popup">
         SELECT * FROM popup WHERE id=#{id}
+    </select>
+    <select id="selectPopupList" resultMap="popupResult">
+        SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, COUNT(l.popupId) AS likeCount
+        FROM popup p
+        LEFT JOIN popuplike l ON p.id = l.popupId
+        LEFT JOIN store s ON p.storeId = s.id
+        GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
+        ORDER BY likeCount DESC
+        LIMIT 6;
     </select>
 </mapper>

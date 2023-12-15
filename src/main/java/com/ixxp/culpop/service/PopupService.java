@@ -2,12 +2,16 @@ package com.ixxp.culpop.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
 import com.ixxp.culpop.dto.popup.PopupCreateRequest;
 import com.ixxp.culpop.entity.*;
 import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +57,26 @@ public class PopupService {
                 popupTagMapper.insertPopupTag(popupTag);
             }
         }
+    }
+
+    // MainPage Carousel 조회
+    public List<PopupCarouselResponse> getPopupCarousel() {
+        // 좋아요 많은 순 6개만 가져오기
+        List<Popup> popups = popupMapper.selectPopupList();
+        List<PopupCarouselResponse> popupCarouselResponses = new ArrayList<>();
+        for (Popup popup : popups) {
+            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
+            String image = jsonArray.getString(0);
+
+            String fullAddress = popup.getAddress();
+            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
+
+            String startDate = popup.getStartDate().replace("-", ".");
+            String endDate = popup.getEndDate().replace("-", ".");
+
+            popupCarouselResponses.add(new PopupCarouselResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate));
+        }
+        return popupCarouselResponses;
     }
 
     // 팝업 좋아요
