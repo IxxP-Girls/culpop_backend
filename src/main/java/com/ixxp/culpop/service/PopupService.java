@@ -210,4 +210,30 @@ public class PopupService {
         PopupLike popupLike = new PopupLike(user, popup);
         popupLikeMapper.deletePopupLike(popupLike);
     }
+
+    // 팝업 검색
+    @Transactional
+    public List<PopupResponse> getSearchPopup(User user, String word, int page, int size) {
+        int offset = (page - 1) * size;
+        List<Popup> popups = popupMapper.selectSearchPopup(word, offset, size);
+        List<PopupResponse> popupResponses = new ArrayList<>();
+        for (Popup popup : popups) {
+            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
+            String image = jsonArray.getString(0);
+
+            String fullAddress = popup.getAddress();
+            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
+
+            String startDate = popup.getStartDate().replace("-", ".");
+            String endDate = popup.getEndDate().replace("-", ".");
+
+            boolean likeCheck = false;
+            if (user != null) {
+                likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
+            }
+
+            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck));
+        }
+        return popupResponses;
+    }
 }

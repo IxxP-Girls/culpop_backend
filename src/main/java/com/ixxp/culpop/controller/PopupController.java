@@ -86,4 +86,15 @@ public class PopupController {
         popupService.unlikePopup(userDetails.getUser(), popupId);
         return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
+
+    // 팝업 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<PopupResponse>> getSearchPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              @RequestParam("word") String word,
+                                                              @RequestParam("page") int page,
+                                                              @RequestParam("size") int size) {
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page, size);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
 }
