@@ -82,6 +82,22 @@
         LEFT JOIN store s ON p.storeId = s.id
         WHERE p.id=#{id}
     </select>
+    <select id="selectProfilePopup" resultMap="popupResult">
+        SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, pl.userId
+        FROM popup p
+        LEFT JOIN popuplike pl ON p.id = pl.popupId
+        LEFT JOIN store s ON p.storeId = s.id
+        WHERE
+            (CASE
+                WHEN NULLIF(#{sort}, '') IS NULL OR #{sort} = 'all' THEN 1
+                WHEN #{sort} = 'open' AND CURDATE() BETWEEN p.startDate AND p.endDate THEN 1
+                WHEN #{sort} = 'soon' AND CURDATE() &lt; p.startDate THEN 1
+                ELSE 0
+            END = 1)
+            AND pl.userId = #{user.id}
+        GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image, pl.userId
+        ORDER BY p.endDate;
+    </select>
     <select id="selectViewCount" parameterType="int">
         SELECT viewCount FROM popup WHERE id = #{popupId};
     </select>
