@@ -28,6 +28,7 @@ public class PopupService {
     private final PopupLikeMapper popupLikeMapper;
 
     // 팝업 등록
+    @Transactional
     public void createPopup(Admin admin, PopupCreateRequest popupCreateRequest) {
         // image Json 으로 변환 후 store 저장
         String image = JSONArray.toJSONString(popupCreateRequest.getImageList());
@@ -54,13 +55,9 @@ public class PopupService {
         String tagList = popupCreateRequest.getTagList();
         String[] tagNameList = tagList.split(",");
         for (String tagName : tagNameList) {
-            Tag tag = tagMapper.selectTag(tagName);
-            if (tag == null) {
-                tag = new Tag(tagName);
-                tagMapper.insertTag(tag);
-                PopupTag popupTag = new PopupTag(popup, tag);
-                popupTagMapper.insertPopupTag(popupTag);
-            }
+            Tag tag = new Tag(tagName);
+            tagMapper.insertTag(tag);
+            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
         }
     }
 
