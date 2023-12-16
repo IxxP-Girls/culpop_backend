@@ -7,6 +7,7 @@ import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -45,6 +46,9 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 .requestMatchers("/users/login").permitAll()
                                 .requestMatchers("/admin/signup").permitAll()
                                 .requestMatchers("/admin/login").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/popup/**").permitAll()
+                                .requestMatchers("/popup/popups").permitAll()
+                                .requestMatchers("/popup/carousel").permitAll()
                         .anyRequest().authenticated()
         );
 

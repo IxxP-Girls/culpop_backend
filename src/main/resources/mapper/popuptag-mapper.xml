@@ -3,7 +3,23 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.PopupTagMapper">
+    <resultMap id="popuptagResult" type="popuptag">
+        <id property="id" column="id" />
+
+        <collection property="popup" javaType="popup">
+            <id property="id" column="popupId" />
+        </collection>
+        <collection property="tag" javaType="tag">
+            <id property="id" column="tagId" />
+            <result property="tagName" column="tagName" />
+        </collection>
+    </resultMap>
     <insert id="insertPopupTag" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO PopupTag (popupId, tagId) VALUES (#{popup.id}, #{tag.id})
     </insert>
+    <select id="selectPopupTag" parameterType="int" resultMap="popuptagResult">
+        SELECT * from popuptag pt
+        LEFT JOIN tag t ON pt.tagId = t.id
+        WHERE popupId=#{popupId}
+    </select>
 </mapper>

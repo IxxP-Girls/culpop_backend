@@ -1,7 +1,11 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
 import com.ixxp.culpop.dto.popup.PopupCreateRequest;
+import com.ixxp.culpop.dto.popup.PopupDetailResponse;
+import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.security.AdminDetailsImpl;
 import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.PopupService;
@@ -10,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +30,43 @@ public class PopupController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 등록 완료");
         popupService.createPopup(adminDetails.getAdmin(), popupCreateRequest);
         return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+    }
+
+    // MainPage 팝업 조회
+    @GetMapping()
+    public ResponseEntity<List<PopupResponse>> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestParam("date") String date) {
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        List<PopupResponse> popupResponses = popupService.getPopup(user, date);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
+
+    // MainPage Carousel 조회
+    @GetMapping("/carousel")
+    public ResponseEntity<List<PopupCarouselResponse>> getPopupCarousel() {
+        return new ResponseEntity<>(popupService.getPopupCarousel(), HttpStatus.OK);
+    }
+
+    // ListPage 팝업 조회
+    @GetMapping("/popups")
+    public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestParam("area") String area,
+                                                            @RequestParam("startDate") String startDate,
+                                                            @RequestParam("endDate") String endDate,
+                                                            @RequestParam("page") int page,
+                                                            @RequestParam("size") int size){
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        List<PopupResponse> popupResponses = popupService.getPopupList(user, area, startDate, endDate, page, size);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
+
+    // 팝업 상세 조회
+    @GetMapping("/{popupId}")
+    public ResponseEntity<PopupDetailResponse> getPopupDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              @PathVariable int popupId) {
+        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        PopupDetailResponse popupDetailResponse = popupService.getPopupDetail(user, popupId);
+        return new ResponseEntity<>(popupDetailResponse, HttpStatus.OK);
     }
 
     // 팝업 좋아요
