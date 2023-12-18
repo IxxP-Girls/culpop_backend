@@ -82,6 +82,34 @@
         LEFT JOIN store s ON p.storeId = s.id
         WHERE p.id=#{id}
     </select>
+    <select id="selectProfilePopup" resultMap="popupResult">
+        SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, pl.userId
+        FROM popup p
+        LEFT JOIN popuplike pl ON p.id = pl.popupId
+        LEFT JOIN store s ON p.storeId = s.id
+        WHERE
+            (CASE
+                WHEN NULLIF(#{sort}, '') IS NULL OR #{sort} = 'all' THEN 1
+                WHEN #{sort} = 'open' AND CURDATE() BETWEEN p.startDate AND p.endDate THEN 1
+                WHEN #{sort} = 'soon' AND CURDATE() &lt; p.startDate THEN 1
+                ELSE 0
+            END = 1)
+            AND pl.userId = #{user.id}
+        GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image, pl.userId
+        ORDER BY p.endDate;
+    </select>
+    <select id="selectSearchPopup" resultMap="popupResult">
+        SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image
+        FROM popup p
+        LEFT JOIN popuplike pl ON p.id = pl.popupId
+        LEFT JOIN store s ON p.storeId = s.id
+        <!--    word: 검색 가능 컬럼 : title, address, tagName    -->
+        WHERE (p.title LIKE CONCAT('%', #{word}, '%') OR p.address LIKE CONCAT('%', #{word}, '%') OR
+        EXISTS (SELECT 1 FROM popupTag pt JOIN tag t ON pt.tagId = t.id WHERE pt.popupId = p.id AND t.tagName LIKE CONCAT('%', #{word}, '%')))
+        GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
+        ORDER BY p.endDate
+        LIMIT #{offset}, #{size};
+    </select>
     <select id="selectViewCount" parameterType="int">
         SELECT viewCount FROM popup WHERE id = #{popupId};
     </select>
