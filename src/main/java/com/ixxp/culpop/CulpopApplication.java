@@ -10,6 +10,7 @@ public class CulpopApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CulpopApplication.class, args);
+		System.out.println("hello world");
 	}
 
 }
