@@ -1,6 +1,7 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.popup.PopupResponse;
 import com.ixxp.culpop.dto.user.ProfileResponse;
 import com.ixxp.culpop.dto.user.ProfileUpdateRequest;
 import com.ixxp.culpop.dto.user.UserLoginRequest;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,5 +54,13 @@ public class UserController {
     public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId());
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
+    }
+
+    // 프로필 관심 팝업 조회
+    @GetMapping("/profile/popupLike")
+    public ResponseEntity<List<PopupResponse>> getProfilePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                               @RequestParam("sort") String sort) {
+        List<PopupResponse> popupResponses = userService.getProfilePopup(userDetails.getUser(), sort);
+        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 }
