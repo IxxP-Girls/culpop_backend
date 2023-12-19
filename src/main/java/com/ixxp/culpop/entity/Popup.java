@@ -1,10 +1,10 @@
 package com.ixxp.culpop.entity;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class Popup {
     private String title;  // 제목
     @Column(nullable = false)
     private String content;  // 팝업스토어 소개
-    @Type(JsonType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(nullable = false, columnDefinition = "json")
     private String time; // 운영 시간
     @Column(nullable = false)

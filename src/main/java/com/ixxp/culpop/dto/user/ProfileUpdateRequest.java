@@ -1,6 +1,6 @@
 package com.ixxp.culpop.dto.user;
 
-import jakarta.validation.constraints.Pattern;
+import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
