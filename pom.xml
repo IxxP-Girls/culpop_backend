@@ -126,10 +126,16 @@
 				</configuration>
 			</plugin>			
     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.9.0</version>
-    </plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.9.0</version>
+  <configuration>
+    <source>${java.version}</source>
+    <target>${java.version}</target>
+    <compilerVersion>${java.version}</compilerVersion>
+    <encoding>${encoding}</encoding>
+  </configuration>
+</plugin>
 		</plugins>
 	</build>
 </project>
