@@ -12,7 +12,7 @@ import com.ixxp.culpop.mapper.PopupLikeMapper;
 import com.ixxp.culpop.mapper.PopupMapper;
 import com.ixxp.culpop.mapper.UserMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -42,13 +42,13 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         http
         .authorizeHttpRequests(
                 authorize -> authorize
-                                .requestMatchers("/users/signup").permitAll()
-                                .requestMatchers("/users/login").permitAll()
-                                .requestMatchers("/admin/signup").permitAll()
-                                .requestMatchers("/admin/login").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/popup/**").permitAll()
-                                .requestMatchers("/popup/popups").permitAll()
-                                .requestMatchers("/popup/carousel").permitAll()
+                                .antMatchers("/users/signup").permitAll()
+                                .antMatchers("/users/login").permitAll()
+                                .antMatchers("/admin/signup").permitAll()
+                                .antMatchers("/admin/login").permitAll()
+                                .antMatchers(HttpMethod.GET,"/popup/**").permitAll()
+                                .antMatchers("/popup/popups").permitAll()
+                                .antMatchers("/popup/carousel").permitAll()
                         .anyRequest().authenticated()
         );
 

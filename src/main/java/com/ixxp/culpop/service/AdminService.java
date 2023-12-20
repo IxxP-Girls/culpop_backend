@@ -6,7 +6,7 @@ import com.ixxp.culpop.entity.Admin;
 import com.ixxp.culpop.entity.UserRoleEnum;
 import com.ixxp.culpop.mapper.AdminMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;

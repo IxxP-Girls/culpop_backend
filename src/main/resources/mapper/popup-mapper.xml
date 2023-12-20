@@ -110,7 +110,7 @@
         ORDER BY p.endDate
         LIMIT #{offset}, #{size};
     </select>
-    <select id="selectViewCount" parameterType="int">
+    <select id="selectViewCount" parameterType="int" resultType="int">
         SELECT viewCount FROM popup WHERE id = #{popupId};
     </select>
     <update id="updateViewCount" parameterType="int">
