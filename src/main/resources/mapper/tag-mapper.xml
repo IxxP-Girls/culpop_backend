@@ -6,7 +6,4 @@
     <insert id="insertTag" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tag (tagName) VALUES (#{tagName})
     </insert>
-    <select id="selectTag" parameterType="String" resultType="tag">
-        SELECT * FROM tag WHERE tagName=#{tagName}
-    </select>
 </mapper>

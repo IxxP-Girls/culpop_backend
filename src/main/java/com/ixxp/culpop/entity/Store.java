@@ -27,4 +27,9 @@ public class Store implements Serializable {
         this.storeName = storeName;
         this.image = image;
     }
+
+    public void updateStore(String storeName, String image) {
+        this.storeName = storeName;
+        this.image = image;
+    }
 }
