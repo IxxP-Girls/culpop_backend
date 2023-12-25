@@ -206,8 +206,11 @@ public class PopupService {
                 popupUpdateRequest.isFee(), popupUpdateRequest.isNoKids(), popupUpdateRequest.isPet(), popupUpdateRequest.isWifi());
         popupMapper.updatePopup(popup);
 
-
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
         popupTagMapper.deletePopupTag(popupId);
+        for (PopupTag popupTag : popupTags) {
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        }
         insertTagsInSeparateTransaction(popup, popupUpdateRequest.getTagList());
     }
 
