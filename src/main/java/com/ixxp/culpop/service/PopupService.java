@@ -221,6 +221,28 @@ public class PopupService {
         }
     }
 
+    // 팝업 삭제
+    @Transactional
+    public void deletePopup(Admin admin, int popupId) {
+        Popup popup = popupMapper.selectPopup(popupId);
+
+        if (popup == null) {
+            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
+        }
+        if (popup.getAdmin().getId() != admin.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
+
+        popupTagMapper.deletePopupTag(popupId);
+        for (PopupTag popupTag : popupTags) {
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        }
+        popupMapper.deletePopup(popup);
+        storeMapper.deleteStore(popup.getStore().getId());
+    }
+
     // 팝업 좋아요
     public void likePopup(User user, int popupId) {
         Popup popup = popupMapper.selectPopup(popupId);

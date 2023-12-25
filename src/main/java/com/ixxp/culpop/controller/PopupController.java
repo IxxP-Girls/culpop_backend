@@ -76,6 +76,15 @@ public class PopupController {
         return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
 
+    // 팝업 삭제
+    @DeleteMapping("/{popupId}")
+    public ResponseEntity<StatusResponse> deletePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
+                                                      @PathVariable int popupId) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
+        popupService.deletePopup(adminDetails.getAdmin(), popupId);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+    }
+
     // 팝업 좋아요
     @PostMapping("/{popupId}/like")
     public ResponseEntity<StatusResponse> likePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,

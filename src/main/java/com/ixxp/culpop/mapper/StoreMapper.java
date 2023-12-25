@@ -8,4 +8,5 @@ public interface StoreMapper {
     void insertStore(Store store);
     Store selectStore(int storeId);
     void updateStore(Store store);
+    void deleteStore(int storeId);
 }

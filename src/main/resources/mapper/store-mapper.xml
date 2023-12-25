@@ -12,4 +12,7 @@
     <update id="updateStore" parameterType="store">
         UPDATE store SET storeName=#{storeName}, image=#{image} WHERE id=#{id}
     </update>
+    <delete id="deleteStore" parameterType="int">
+        DELETE FROM store WHERE id=#{id}
+    </delete>
 </mapper>

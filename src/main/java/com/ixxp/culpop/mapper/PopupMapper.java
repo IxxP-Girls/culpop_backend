@@ -19,4 +19,5 @@ public interface PopupMapper {
     int selectViewCount(int popupId);
     void updateViewCount(int popupId);
     void updatePopup(Popup popup);
+    void deletePopup(Popup popup);
 }

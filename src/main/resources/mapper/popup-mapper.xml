@@ -130,4 +130,7 @@
         notice=#{notice}, storeUrl=#{storeUrl}, snsUrl=#{snsUrl}, parking=#{parking}, fee=#{fee}, noKids=#{noKids}, pet=#{pet}, wifi=#{wifi}
         WHERE id=#{id}
     </update>
+    <delete id="deletePopup" parameterType="popup">
+        DELETE FROM popup WHERE id = #{id}
+    </delete>
 </mapper>

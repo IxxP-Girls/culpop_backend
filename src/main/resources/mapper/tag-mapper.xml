@@ -6,4 +6,7 @@
     <insert id="insertTag" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tag (tagName) VALUES (#{tagName})
     </insert>
+    <delete id="deleteTag" parameterType="int">
+        DELETE FROM tag WHERE id=#{id}
+    </delete>
 </mapper>
