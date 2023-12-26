@@ -18,4 +18,6 @@ public interface PopupMapper {
     List<Popup> selectSearchPopup(String word, int offset, int size);
     int selectViewCount(int popupId);
     void updateViewCount(int popupId);
+    void updatePopup(Popup popup);
+    void deletePopup(Popup popup);
 }

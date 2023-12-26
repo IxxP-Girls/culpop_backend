@@ -30,21 +30,30 @@
         <result property="storeUrl" column="storeUrl" />
         <result property="snsUrl" column="snsUrl" />
 
-        <collection property="store" javaType="Store">
-            <id property="id" column="storeId" />
-            <result property="storeName" column="storeName" />
-            <result property="image" column="image" />
-        </collection>
-        <collection property="admin" javaType="Admin">
-            <id property="id" column="adminId" />
-        </collection>
+        <association property="store" javaType="Store" resultMap="storeResult"/>
+        <association property="admin" javaType="Admin" resultMap="adminResult"/>
     </resultMap>
+
+    <resultMap id="storeResult" type="Store">
+        <id property="id" column="storeId" />
+        <result property="storeName" column="storeName" />
+        <result property="image" column="image" />
+    </resultMap>
+    <resultMap id="adminResult" type="Admin">
+        <id property="id" column="adminId" />
+        <result property="email" column="email" />
+        <result property="pwd" column="pwd" />
+    </resultMap>
+
     <insert id="insertPopup" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO popup (adminId, storeId, title, content, time, address, startDate, endDate, latitude, longitude, notice, storeUrl, snsUrl, parking, fee, noKids, pet, wifi, viewCount)
         VALUES (#{admin.id}, #{store.id}, #{title}, #{content}, #{time}, #{address}, #{startDate}, #{endDate}, #{latitude}, #{longitude}, #{notice}, #{storeUrl}, #{snsUrl}, #{parking}, #{fee}, #{noKids}, #{pet}, #{wifi}, #{viewCount})
     </insert>
-    <select id="selectPopup" parameterType="int" resultType="popup">
-        SELECT * FROM popup WHERE id=#{id}
+    <select id="selectPopup" resultMap="popupDetail">
+        SELECT * FROM popup p
+        LEFT JOIN store s ON p.storeId = s.id
+        LEFT JOIN admin a ON p.adminId = a.id
+        WHERE p.id=#{id}
     </select>
     <select id="selectPopupMain" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image
@@ -116,4 +125,12 @@
     <update id="updateViewCount" parameterType="int">
         UPDATE popup SET viewCount = viewCount+1 WHERE id=#{popupId}
     </update>
+    <update id="updatePopup" parameterType="popup">
+        UPDATE popup SET title=#{title}, content=#{content}, time=#{time}, address=#{address}, startDate=#{startDate}, endDate=#{endDate}, latitude=#{latitude}, longitude=#{longitude},
+        notice=#{notice}, storeUrl=#{storeUrl}, snsUrl=#{snsUrl}, parking=#{parking}, fee=#{fee}, noKids=#{noKids}, pet=#{pet}, wifi=#{wifi}
+        WHERE id=#{id}
+    </update>
+    <delete id="deletePopup" parameterType="popup">
+        DELETE FROM popup WHERE id = #{id}
+    </delete>
 </mapper>

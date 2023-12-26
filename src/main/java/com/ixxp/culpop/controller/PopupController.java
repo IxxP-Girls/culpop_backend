@@ -1,10 +1,7 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
-import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
-import com.ixxp.culpop.dto.popup.PopupCreateRequest;
-import com.ixxp.culpop.dto.popup.PopupDetailResponse;
-import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.dto.popup.*;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.security.AdminDetailsImpl;
 import com.ixxp.culpop.security.UserDetailsImpl;
@@ -67,6 +64,25 @@ public class PopupController {
         User user = (userDetails != null) ? userDetails.getUser() : new User();
         PopupDetailResponse popupDetailResponse = popupService.getPopupDetail(user, popupId);
         return new ResponseEntity<>(popupDetailResponse, HttpStatus.OK);
+    }
+
+    // 팝업 수정
+    @PatchMapping("/{popupId}")
+    public ResponseEntity<StatusResponse> updatePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
+                                                      @PathVariable int popupId,
+                                                      @RequestBody PopupUpdateRequest popupUpdateRequest) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 수정 완료");
+        popupService.updatePopup(adminDetails.getAdmin(), popupId, popupUpdateRequest);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+    }
+
+    // 팝업 삭제
+    @DeleteMapping("/{popupId}")
+    public ResponseEntity<StatusResponse> deletePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
+                                                      @PathVariable int popupId) {
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
+        popupService.deletePopup(adminDetails.getAdmin(), popupId);
+        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
     }
 
     // 팝업 좋아요

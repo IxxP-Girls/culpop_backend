@@ -3,10 +3,7 @@ package com.ixxp.culpop.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ixxp.culpop.dto.popup.PopupCarouselResponse;
-import com.ixxp.culpop.dto.popup.PopupCreateRequest;
-import com.ixxp.culpop.dto.popup.PopupDetailResponse;
-import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.dto.popup.*;
 import com.ixxp.culpop.entity.*;
 import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
@@ -176,6 +173,77 @@ public class PopupService {
                 popup.getTitle(), popup.getContent(), time, popup.getAddress(), startDate, endDate,
                 popup.getLatitude(), popup.getLongitude(), popup.getNotice(), popup.getStoreUrl(), popup.getSnsUrl(),
                 popup.isParking(), popup.isFee(), popup.isNoKids(), popup.isPet(), popup.isWifi(), likeCount, viewCount, likeCheck, tagList);
+    }
+
+    // 팝업 수정
+    @Transactional
+    public void updatePopup(Admin admin, int popupId, PopupUpdateRequest popupUpdateRequest) {
+        Popup popup = popupMapper.selectPopup(popupId);
+
+        if (popup == null) {
+            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
+        }
+        if (popup.getAdmin().getId() != admin.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        String image = JSONArray.toJSONString(popupUpdateRequest.getImageList());
+        Store store = storeMapper.selectStore(popup.getStore().getId());
+        store.updateStore(popupUpdateRequest.getStore(), image);
+        storeMapper.updateStore(store);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String time = null;
+        try {
+            time = objectMapper.writeValueAsString(popupUpdateRequest.getTime());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        popup.updatePopup(admin, new Store(popupUpdateRequest.getStore(), image), popupUpdateRequest.getTitle(), popupUpdateRequest.getContent(), time, popupUpdateRequest.getAddress(),
+                popupUpdateRequest.getStartDate(), popupUpdateRequest.getEndDate(), popupUpdateRequest.getLatitude(), popupUpdateRequest.getLongitude(),
+                popupUpdateRequest.getNotice(), popupUpdateRequest.getStoreUrl(), popupUpdateRequest.getSnsUrl(), popupUpdateRequest.isParking(),
+                popupUpdateRequest.isFee(), popupUpdateRequest.isNoKids(), popupUpdateRequest.isPet(), popupUpdateRequest.isWifi());
+        popupMapper.updatePopup(popup);
+
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
+        popupTagMapper.deletePopupTag(popupId);
+        for (PopupTag popupTag : popupTags) {
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        }
+        insertTagsInSeparateTransaction(popup, popupUpdateRequest.getTagList());
+    }
+
+    @Transactional
+    public void insertTagsInSeparateTransaction(Popup popup, String tagList) {
+        String[] tagNameList = tagList.split(",");
+        for (String tagName : tagNameList) {
+            Tag tag = new Tag(tagName);
+            tagMapper.insertTag(tag);
+            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
+        }
+    }
+
+    // 팝업 삭제
+    @Transactional
+    public void deletePopup(Admin admin, int popupId) {
+        Popup popup = popupMapper.selectPopup(popupId);
+
+        if (popup == null) {
+            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
+        }
+        if (popup.getAdmin().getId() != admin.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
+
+        popupTagMapper.deletePopupTag(popupId);
+        for (PopupTag popupTag : popupTags) {
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        }
+        popupMapper.deletePopup(popup);
+        storeMapper.deleteStore(popup.getStore().getId());
     }
 
     // 팝업 좋아요

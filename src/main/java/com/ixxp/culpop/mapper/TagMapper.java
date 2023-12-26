@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TagMapper {
     void insertTag(Tag tag);
-    Tag selectTag(String tagName);
+    void deleteTag(int tagId);
 }

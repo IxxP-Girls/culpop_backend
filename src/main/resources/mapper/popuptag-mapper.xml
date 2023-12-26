@@ -22,4 +22,7 @@
         LEFT JOIN tag t ON pt.tagId = t.id
         WHERE popupId=#{popupId}
     </select>
+    <delete id="deletePopupTag" parameterType="int">
+        DELETE FROM PopupTag WHERE popupId=#{popupId}
+    </delete>
 </mapper>

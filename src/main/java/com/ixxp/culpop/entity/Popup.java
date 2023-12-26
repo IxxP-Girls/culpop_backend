@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @Entity
@@ -49,9 +52,10 @@ public class Popup {
     private boolean pet;  // 반려동물 가능 여부
     @Column(nullable = false)
     private boolean wifi;  // 와이파이 가능 여부
-
     @Column(nullable = false)
     private int viewCount; // 조회수
+    @OneToMany(mappedBy = "popup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PopupTag> popupTags = new ArrayList<>();
 
     public Popup(Admin admin, Store store, String title, String content, String time, String address, String startDate, String endDate,
                  String latitude, String longitude, String notice, String storeUrl, String snsUrl,
@@ -75,5 +79,28 @@ public class Popup {
         this.pet = pet;
         this.wifi = wifi;
         this.viewCount = 0;
+    }
+
+    public void updatePopup(Admin admin, Store store, String title, String content, String time, String address, String startDate, String endDate,
+                            String latitude, String longitude, String notice, String storeUrl, String snsUrl,
+                            boolean parking, boolean fee, boolean noKids, boolean pet, boolean wifi) {
+        this.admin = admin;
+        this.store = store;
+        this.title = title;
+        this.content = content;
+        this.time = time;
+        this.address = address;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.notice = notice;
+        this.storeUrl = storeUrl;
+        this.snsUrl = snsUrl;
+        this.parking = parking;
+        this.fee = fee;
+        this.noKids = noKids;
+        this.pet = pet;
+        this.wifi = wifi;
     }
 }

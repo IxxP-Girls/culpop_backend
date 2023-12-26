@@ -9,4 +9,5 @@ import java.util.List;
 public interface PopupTagMapper {
     void insertPopupTag(PopupTag popupTag);
     List<PopupTag> selectPopupTag(int popupId);
+    void deletePopupTag(int popupId);
 }
