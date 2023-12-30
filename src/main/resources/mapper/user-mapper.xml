@@ -7,15 +7,15 @@
         INSERT INTO User (username, email, pwd, role) VALUES (#{username}, #{email}, #{pwd}, #{role})
     </insert>
     <select id="selectUserEmail" parameterType="String" resultType="user">
-        SELECT * FROM user WHERE email=#{email}
+        SELECT * FROM User WHERE email=#{email}
     </select>
     <select id="selectEmail" parameterType="String" resultType="user">
-        SELECT * FROM user WHERE email=#{email}
+        SELECT * FROM User WHERE email=#{email}
     </select>
     <update id="updateProfile" parameterType="user">
-        UPDATE user SET username=#{username} WHERE id=#{userId}
+        UPDATE User SET username=#{username} WHERE id=#{userId}
     </update>
     <select id="getProfile" parameterType="int" resultType="user">
-        SELECT * FROM user WHERE id=#{userId}
+        SELECT * FROM User WHERE id=#{userId}
     </select>
 </mapper>
