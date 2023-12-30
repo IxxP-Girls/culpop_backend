@@ -18,7 +18,7 @@
         INSERT INTO PopupTag (popupId, tagId) VALUES (#{popup.id}, #{tag.id})
     </insert>
     <select id="selectPopupTag" parameterType="int" resultMap="popuptagResult">
-        SELECT * from popuptag pt
+        SELECT * from PopupTag pt
         LEFT JOIN tag t ON pt.tagId = t.id
         WHERE popupId=#{popupId}
     </select>

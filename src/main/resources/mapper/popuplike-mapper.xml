@@ -4,18 +4,18 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.PopupLikeMapper">
     <insert id="insertPopupLike" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO popuplike (userId, popupId) VALUES (#{user.id}, #{popup.id})
+        INSERT INTO PopupLike (userId, popupId) VALUES (#{user.id}, #{popup.id})
     </insert>
     <select id="selectPopupLike" parameterType="int" resultType="popuplike">
-        SELECT * FROM popuplike WHERE popupId=#{popup.id}
+        SELECT * FROM PopupLike WHERE popupId=#{popup.id}
     </select>
     <select id="checkPopupLike" parameterType="int" resultType="boolean">
-        SELECT IF(COUNT(*) = 1, 1, 0) FROM popuplike WHERE userId=#{userId} and popupId=#{popupId}
+        SELECT IF(COUNT(*) = 1, 1, 0) FROM PopupLike WHERE userId=#{userId} and popupId=#{popupId}
     </select>
     <select id="countLikesByPopupId" parameterType="int" resultType="int">
-        SELECT COUNT(*) FROM popuplike WHERE popupId = #{popupId};
+        SELECT COUNT(*) FROM PopupLike WHERE popupId = #{popupId};
     </select>
     <delete id="deletePopupLike">
-        DELETE FROM popuplike WHERE userId =#{user.id} and popupId=#{popup.id}
+        DELETE FROM PopupLike WHERE userId =#{user.id} and popupId=#{popup.id}
     </delete>
 </mapper>

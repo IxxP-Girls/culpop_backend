@@ -4,9 +4,9 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.AdminMapper">
     <insert id="insertAdmin" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO admin (email, pwd, role) VALUES (#{email}, #{pwd}, #{role})
+        INSERT INTO Admin (email, pwd, role) VALUES (#{email}, #{pwd}, #{role})
     </insert>
     <select id="selectEmail" parameterType="String" resultType="admin">
-        SELECT * FROM admin WHERE email=#{email}
+        SELECT * FROM Admin WHERE email=#{email}
     </select>
 </mapper>
