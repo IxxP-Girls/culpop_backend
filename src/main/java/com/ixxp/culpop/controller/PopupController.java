@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,11 +32,10 @@ public class PopupController {
 
     // MainPage 팝업 조회
     @GetMapping()
-    public ResponseEntity<List<PopupResponse>> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                        @RequestParam("date") String date) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getPopup(user, date);
-        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    public List<PopupResponse> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @RequestParam(value = "date", required = false) String date) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return popupService.getPopup(user, date);
     }
 
     // MainPage Carousel 조회

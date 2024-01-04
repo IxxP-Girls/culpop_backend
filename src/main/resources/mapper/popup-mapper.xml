@@ -60,7 +60,13 @@
         FROM Popup p
         LEFT JOIN PopupLike l ON p.id = l.popupId
         LEFT JOIN Store s ON p.storeId = s.id
-        WHERE #{date} BETWEEN p.startDate AND p.endDate
+        WHERE
+            <if test="date != null and date != ''">
+                #{date} BETWEEN p.startDate AND p.endDate
+            </if>
+            <if test="date == null or date == ''">
+                CURRENT_DATE BETWEEN p.startDate AND p.endDate
+            </if>
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
         LIMIT 8;
