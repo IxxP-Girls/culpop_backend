@@ -65,9 +65,9 @@ public class PopupController {
     @GetMapping("/{popupId}")
     public ResponseEntity<PopupDetailResponse> getPopupDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @PathVariable int popupId) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
         PopupDetailResponse popupDetailResponse = popupService.getPopupDetail(user, popupId);
-        return new ResponseEntity<>(popupDetailResponse, HttpStatus.OK);
+        return ResponseEntity.ok(popupDetailResponse);
     }
 
     // 팝업 수정

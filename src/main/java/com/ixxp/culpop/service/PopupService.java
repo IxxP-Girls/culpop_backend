@@ -62,49 +62,24 @@ public class PopupService {
     // 팝업 상세 조회
     @Transactional
     public PopupDetailResponse getPopupDetail(User user, int popupId) {
-        Popup popup = popupMapper.selectPopupDetail(popupId);
-        if (popup == null) {
-            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
-        }
+        Popup popup = getValidPopup(popupId);
 
-        org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
-        List<String> imageList = new ArrayList<>();
-        for (Object image : jsonArray) {
-            if (image instanceof String) {
-                imageList.add((String) image);
-            }
-        }
+        List<String> imageList = getImageList(popup);
+        List<Map<String, Object>> timeList = convertTimeToList(popup.getTime());
+        List<String> tagList = getTagList(popup);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String, Object>> time = null;
-        try {
-            time = objectMapper.readValue(popup.getTime(), new TypeReference<List<Map<String, Object>>>() {});
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        updatePopupCounts(popupId);
+        boolean likeCheck = (user != null) && popupLikeMapper.checkPopupLike(user.getId(), popupId);
 
         String startDate = popup.getStartDate().replace("-", ".");
         String endDate = popup.getEndDate().replace("-", ".");
 
-        int likeCount = popupLikeMapper.countLikesByPopupId(popupId);
-        popupMapper.updateViewCount(popupId);
-        int viewCount = popupMapper.selectViewCount(popupId);
-
-        boolean likeCheck = false;
-        if (user != null) {
-            likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
-        }
-
-        List<PopupTag> popupTag = popupTagMapper.selectPopupTag(popupId);
-        List<String> tagList = new ArrayList<>();
-        for (PopupTag tag : popupTag) {
-            tagList.add(tag.getTag().getTagName());
-        }
-
         return new PopupDetailResponse(popupId, popup.getStore().getStoreName(), imageList,
-                popup.getTitle(), popup.getContent(), time, popup.getAddress(), startDate, endDate,
-                popup.getLatitude(), popup.getLongitude(), popup.getNotice(), popup.getStoreUrl(), popup.getSnsUrl(),
-                popup.isParking(), popup.isFee(), popup.isNoKids(), popup.isPet(), popup.isWifi(), likeCount, viewCount, likeCheck, tagList);
+                popup.getTitle(), popup.getContent(), timeList, popup.getAddress(),
+                startDate, endDate, popup.getLatitude(), popup.getLongitude(),
+                popup.getNotice(), popup.getStoreUrl(), popup.getSnsUrl(), popup.isParking(),
+                popup.isFee(), popup.isNoKids(), popup.isPet(), popup.isWifi(),
+                getLikeCountByPopupId(popupId), getViewCountByPopupId(popupId), likeCheck, tagList);
     }
 
     // 팝업 수정
@@ -286,5 +261,49 @@ public class PopupService {
                     return new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck);
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Popup getValidPopup(int popupId) {
+        Popup popup = popupMapper.selectPopup(popupId);
+        if (popup == null) {
+            throw new IllegalArgumentException("Popup이 존재하지 않습니다.");
+        }
+        return popup;
+    }
+
+    private List<String> getImageList(Popup popup) {
+        org.json.JSONArray imageList = new org.json.JSONArray(popup.getStore().getImage());
+        return imageList.toList().stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    private List<Map<String, Object>> convertTimeToList(String time) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(time, new TypeReference<List<Map<String, Object>>>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("popup의 time을 JSON으로 변환하는데 실패했습니다.", e);
+        }
+    }
+
+    private List<String> getTagList(Popup popup) {
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
+        return popupTags.stream()
+                .map(tag -> tag.getTag().getTagName())
+                .collect(Collectors.toList());
+    }
+
+    private void updatePopupCounts(int popupId) {
+        popupMapper.updateViewCount(popupId);
+    }
+
+    private int getLikeCountByPopupId(int popupId) {
+        return popupLikeMapper.countLikesByPopupId(popupId);
+    }
+
+    private int getViewCountByPopupId(int popupId) {
+        return popupMapper.selectViewCount(popupId);
     }
 }
