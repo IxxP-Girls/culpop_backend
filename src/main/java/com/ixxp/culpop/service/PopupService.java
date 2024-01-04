@@ -52,28 +52,11 @@ public class PopupService {
     }
 
     // ListPage 팝업 조회
-    public List<PopupResponse> getPopupList(User user, String area, String startDate, String endDate, int page, int size) {
-        int offset = (page - 1) * size;
-        List<Popup> popups = popupMapper.selectPopupList(area, startDate, endDate, offset, size);
-        List<PopupResponse> popupResponses = new ArrayList<>();
-        for (Popup popup : popups) {
-            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
-            String image = jsonArray.getString(0);
+    public List<PopupResponse> getPopupList(User user, String area, String startDate, String endDate, int page) {
+        int offset = (page - 1) * 10;
+        List<Popup> popups = popupMapper.selectPopupList(area, startDate, endDate, offset);
 
-            String fullAddress = popup.getAddress();
-            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
-
-            String start = popup.getStartDate().replace("-", ".");
-            String end = popup.getEndDate().replace("-", ".");
-
-            boolean likeCheck = false;
-            if (user != null) {
-                likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
-            }
-
-            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, start, end, likeCheck));
-        }
-        return popupResponses;
+        return convertToPopupResponseList(user, popups);
     }
 
     // 팝업 상세 조회

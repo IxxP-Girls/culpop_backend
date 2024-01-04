@@ -90,7 +90,7 @@
             AND p.endDate &gt;= #{startDate}
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
-        LIMIT #{offset}, #{size};
+        LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectPopupDetail" parameterType="int" resultMap="popupDetail">
         SELECT * FROM Popup p

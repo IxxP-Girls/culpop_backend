@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,16 +46,19 @@ public class PopupController {
     }
 
     // ListPage 팝업 조회
-    @GetMapping("/popups")
-    public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                            @RequestParam("area") String area,
-                                                            @RequestParam("startDate") String startDate,
-                                                            @RequestParam("endDate") String endDate,
-                                                            @RequestParam("page") int page,
-                                                            @RequestParam("size") int size){
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getPopupList(user, area, startDate, endDate, page, size);
-        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    @GetMapping("/list")
+    public List<PopupResponse> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @RequestParam(name = "area", defaultValue = "all") String area,
+                                                            @RequestParam(name = "startDate", required = false) String startDate,
+                                                            @RequestParam(name = "endDate", required = false) String endDate,
+                                                            @RequestParam(name = "page", defaultValue = "1") int page){
+        if (startDate == null || endDate == null) {
+            startDate = getDefaultDate();
+            endDate = getDefaultDate();
+        }
+
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return popupService.getPopupList(user, area, startDate, endDate, page);
     }
 
     // 팝업 상세 조회
@@ -112,5 +116,9 @@ public class PopupController {
         User user = (userDetails != null) ? userDetails.getUser() : new User();
         List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page, size);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
+
+    private String getDefaultDate() {
+        return LocalDate.now().toString();
     }
 }
