@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,47 +25,49 @@ public class PopupController {
     // 팝업 등록
     @PostMapping()
     public ResponseEntity<StatusResponse> createPopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
-                                                      @RequestBody PopupCreateRequest popupCreateRequest) {
+                                                      @RequestBody PopupRequest popupRequest) {
+        popupService.createPopup(adminDetails.getAdmin(), popupRequest);
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 등록 완료");
-        popupService.createPopup(adminDetails.getAdmin(), popupCreateRequest);
-        return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
 
     // MainPage 팝업 조회
     @GetMapping()
     public ResponseEntity<List<PopupResponse>> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                        @RequestParam("date") String date) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getPopup(user, date);
-        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+                                                        @RequestParam(value = "date", required = false) String date) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return ResponseEntity.ok(popupService.getPopup(user, date));
     }
 
     // MainPage Carousel 조회
     @GetMapping("/carousel")
     public ResponseEntity<List<PopupCarouselResponse>> getPopupCarousel() {
-        return new ResponseEntity<>(popupService.getPopupCarousel(), HttpStatus.OK);
+        return ResponseEntity.ok(popupService.getPopupCarousel());
     }
 
     // ListPage 팝업 조회
-    @GetMapping("/popups")
+    @GetMapping("/list")
     public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                            @RequestParam("area") String area,
-                                                            @RequestParam("startDate") String startDate,
-                                                            @RequestParam("endDate") String endDate,
-                                                            @RequestParam("page") int page,
-                                                            @RequestParam("size") int size){
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getPopupList(user, area, startDate, endDate, page, size);
-        return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+                                                            @RequestParam(name = "area", defaultValue = "all") String area,
+                                                            @RequestParam(name = "startDate", required = false) String startDate,
+                                                            @RequestParam(name = "endDate", required = false) String endDate,
+                                                            @RequestParam(name = "page", defaultValue = "1") int page){
+        if (startDate == null || endDate == null) {
+            startDate = getDefaultDate();
+            endDate = getDefaultDate();
+        }
+
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return ResponseEntity.ok(popupService.getPopupList(user, area, startDate, endDate, page));
     }
 
     // 팝업 상세 조회
     @GetMapping("/{popupId}")
     public ResponseEntity<PopupDetailResponse> getPopupDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @PathVariable int popupId) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
         PopupDetailResponse popupDetailResponse = popupService.getPopupDetail(user, popupId);
-        return new ResponseEntity<>(popupDetailResponse, HttpStatus.OK);
+        return ResponseEntity.ok(popupDetailResponse);
     }
 
     // 팝업 수정
@@ -112,5 +116,9 @@ public class PopupController {
         User user = (userDetails != null) ? userDetails.getUser() : new User();
         List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page, size);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
+    }
+
+    private String getDefaultDate() {
+        return LocalDate.now().toString();
     }
 }

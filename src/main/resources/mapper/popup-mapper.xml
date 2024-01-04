@@ -60,7 +60,13 @@
         FROM Popup p
         LEFT JOIN PopupLike l ON p.id = l.popupId
         LEFT JOIN Store s ON p.storeId = s.id
-        WHERE #{date} BETWEEN p.startDate AND p.endDate
+        WHERE
+            <if test="date != null and date != ''">
+                #{date} BETWEEN p.startDate AND p.endDate
+            </if>
+            <if test="date == null or date == ''">
+                CURRENT_DATE BETWEEN p.startDate AND p.endDate
+            </if>
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
         LIMIT 8;
@@ -68,7 +74,7 @@
     <select id="selectCarousel" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, COUNT(l.popupId) AS likeCount
         FROM Popup p
-        LEFT JOIN PopuplLike l ON p.id = l.popupId
+        LEFT JOIN PopupLike l ON p.id = l.popupId
         LEFT JOIN Store s ON p.storeId = s.id
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY likeCount DESC
@@ -84,7 +90,7 @@
             AND p.endDate &gt;= #{startDate}
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
-        LIMIT #{offset}, #{size};
+        LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectPopupDetail" parameterType="int" resultMap="popupDetail">
         SELECT * FROM Popup p

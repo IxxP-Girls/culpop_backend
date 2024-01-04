@@ -12,7 +12,7 @@ public interface PopupMapper {
     Popup selectPopup(int popupId);
     List<Popup> selectPopupMain(String date);
     List<Popup> selectCarousel();
-    List<Popup> selectPopupList(String area,String startDate, String endDate, int offset, int size);
+    List<Popup> selectPopupList(String area,String startDate, String endDate, int offset);
     Popup selectPopupDetail(int popupId);
     List<Popup> selectProfilePopup(User user, String sort);
     List<Popup> selectSearchPopup(String word, int offset, int size);
