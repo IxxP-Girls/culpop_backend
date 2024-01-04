@@ -26,36 +26,11 @@ public class PopupService {
 
     // 팝업 등록
     @Transactional
-    public void createPopup(Admin admin, PopupCreateRequest popupCreateRequest) {
-        // image Json 으로 변환 후 store 저장
-        String image = JSONArray.toJSONString(popupCreateRequest.getImageList());
-        Store store = new Store(popupCreateRequest.getStore(), image);
-        storeMapper.insertStore(store);
-
-        // time Json 으로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        String time = null;
-        try {
-            time = objectMapper.writeValueAsString(popupCreateRequest.getTime());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        // popup 저장
-        Popup popup = new Popup(admin, store, popupCreateRequest.getTitle(), popupCreateRequest.getContent(), time, popupCreateRequest.getAddress(),
-                popupCreateRequest.getStartDate(), popupCreateRequest.getEndDate(), popupCreateRequest.getLatitude(), popupCreateRequest.getLongitude(),
-                popupCreateRequest.getNotice(), popupCreateRequest.getStoreUrl(), popupCreateRequest.getSnsUrl(), popupCreateRequest.isParking(),
-                popupCreateRequest.isFee(), popupCreateRequest.isNoKids(), popupCreateRequest.isPet(), popupCreateRequest.isWifi());
-        popupMapper.insertPopup(popup);
-
-        // tag 저장
-        String tagList = popupCreateRequest.getTagList();
-        String[] tagNameList = tagList.split(",");
-        for (String tagName : tagNameList) {
-            Tag tag = new Tag(tagName);
-            tagMapper.insertTag(tag);
-            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
-        }
+    public void createPopup(Admin admin, PopupRequest popupRequest) {
+        Store store = saveStore(popupRequest.getStore(), popupRequest.getImageList());
+        String time = convertTimeToJson(popupRequest.getTime());
+        Popup popup = createOrUpdatePopup(admin, store, popupRequest, time);
+        saveTags(popupRequest.getTagList(), popup);
     }
 
     // MainPage 팝업 조회
@@ -300,5 +275,40 @@ public class PopupService {
             popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck));
         }
         return popupResponses;
+    }
+
+    private Store saveStore(String storeName, List<String> imageList) {
+        String image = JSONArray.toJSONString(imageList);
+        Store store = new Store(storeName, image);
+        storeMapper.insertStore(store);
+        return store;
+    }
+
+    private String convertTimeToJson(List<Map<String, Object>> time) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(time);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert time to JSON", e);
+        }
+    }
+
+    private Popup createOrUpdatePopup(Admin admin, Store store, PopupRequest popupRequest, String time) {
+        Popup popup = new Popup(admin, store, popupRequest.getTitle(), popupRequest.getContent(), time,
+                popupRequest.getAddress(), popupRequest.getStartDate(), popupRequest.getEndDate(),
+                popupRequest.getLatitude(), popupRequest.getLongitude(), popupRequest.getNotice(),
+                popupRequest.getStoreUrl(), popupRequest.getSnsUrl(), popupRequest.isParking(),
+                popupRequest.isFee(), popupRequest.isNoKids(), popupRequest.isPet(), popupRequest.isWifi());
+        popupMapper.insertPopup(popup);
+        return popup;
+    }
+
+    private void saveTags(String tagList, Popup popup) {
+        String[] tagNameList = tagList.split(",");
+        for (String tagName : tagNameList) {
+            Tag tag = new Tag(tagName);
+            tagMapper.insertTag(tag);
+            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
+        }
     }
 }

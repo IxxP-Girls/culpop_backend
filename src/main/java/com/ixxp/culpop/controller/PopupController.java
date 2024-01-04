@@ -23,10 +23,10 @@ public class PopupController {
     // 팝업 등록
     @PostMapping()
     public ResponseEntity<StatusResponse> createPopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
-                                                      @RequestBody PopupCreateRequest popupCreateRequest) {
+                                                      @RequestBody PopupRequest popupRequest) {
+        popupService.createPopup(adminDetails.getAdmin(), popupRequest);
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 등록 완료");
-        popupService.createPopup(adminDetails.getAdmin(), popupCreateRequest);
-        return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
 
     // MainPage 팝업 조회

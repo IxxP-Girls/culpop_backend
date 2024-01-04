@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-public class PopupCreateRequest {
+public class PopupRequest {
     private String store;  // 스토어 이름
     private List<String> imageList;  // 이미지
     private String title;  // 제목
