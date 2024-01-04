@@ -33,21 +33,21 @@ public class PopupController {
 
     // MainPage 팝업 조회
     @GetMapping()
-    public List<PopupResponse> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<List<PopupResponse>> getPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                         @RequestParam(value = "date", required = false) String date) {
         User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
-        return popupService.getPopup(user, date);
+        return ResponseEntity.ok(popupService.getPopup(user, date));
     }
 
     // MainPage Carousel 조회
     @GetMapping("/carousel")
-    public List<PopupCarouselResponse> getPopupCarousel() {
-        return popupService.getPopupCarousel();
+    public ResponseEntity<List<PopupCarouselResponse>> getPopupCarousel() {
+        return ResponseEntity.ok(popupService.getPopupCarousel());
     }
 
     // ListPage 팝업 조회
     @GetMapping("/list")
-    public List<PopupResponse> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                             @RequestParam(name = "area", defaultValue = "all") String area,
                                                             @RequestParam(name = "startDate", required = false) String startDate,
                                                             @RequestParam(name = "endDate", required = false) String endDate,
@@ -58,7 +58,7 @@ public class PopupController {
         }
 
         User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
-        return popupService.getPopupList(user, area, startDate, endDate, page);
+        return ResponseEntity.ok(popupService.getPopupList(user, area, startDate, endDate, page));
     }
 
     // 팝업 상세 조회
