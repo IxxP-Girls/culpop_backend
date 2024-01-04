@@ -74,7 +74,7 @@
     <select id="selectCarousel" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, COUNT(l.popupId) AS likeCount
         FROM Popup p
-        LEFT JOIN PopuplLike l ON p.id = l.popupId
+        LEFT JOIN PopupLike l ON p.id = l.popupId
         LEFT JOIN Store s ON p.storeId = s.id
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY likeCount DESC

@@ -40,8 +40,8 @@ public class PopupController {
 
     // MainPage Carousel 조회
     @GetMapping("/carousel")
-    public ResponseEntity<List<PopupCarouselResponse>> getPopupCarousel() {
-        return new ResponseEntity<>(popupService.getPopupCarousel(), HttpStatus.OK);
+    public List<PopupCarouselResponse> getPopupCarousel() {
+        return popupService.getPopupCarousel();
     }
 
     // ListPage 팝업 조회

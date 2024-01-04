@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,22 +42,13 @@ public class PopupService {
 
     // MainPage Carousel 조회
     public List<PopupCarouselResponse> getPopupCarousel() {
-        // 좋아요 많은 순 6개만 가져오기
         List<Popup> popups = popupMapper.selectCarousel();
-        List<PopupCarouselResponse> popupCarouselResponses = new ArrayList<>();
-        for (Popup popup : popups) {
-            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
-            String image = jsonArray.getString(0);
+        List<PopupResponse> popupResponses = convertToPopupResponseList(null, popups);
 
-            String fullAddress = popup.getAddress();
-            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
-
-            String startDate = popup.getStartDate().replace("-", ".");
-            String endDate = popup.getEndDate().replace("-", ".");
-
-            popupCarouselResponses.add(new PopupCarouselResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate));
-        }
-        return popupCarouselResponses;
+        return popupResponses.stream()
+                .map(response -> new PopupCarouselResponse(response.getPopupId(), response.getImage(), response.getTitle(),
+                        response.getAddress(), response.getStartDate(), response.getEndDate()))
+                .collect(Collectors.toList());
     }
 
     // ListPage 팝업 조회
@@ -295,21 +287,21 @@ public class PopupService {
     }
 
     private List<PopupResponse> convertToPopupResponseList(User user, List<Popup> popups) {
-        List<PopupResponse> popupResponses = new ArrayList<>();
-        for (Popup popup : popups) {
-            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
-            String image = jsonArray.getString(0);
+        return popups.stream()
+                .map(popup -> {
+                    org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
+                    String image = jsonArray.getString(0);
 
-            String fullAddress = popup.getAddress();
-            String address = fullAddress.substring(0, fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
+                    String fullAddress = popup.getAddress();
+                    String address = fullAddress.substring(0, fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
 
-            String startDate = popup.getStartDate().replace("-", ".");
-            String endDate = popup.getEndDate().replace("-", ".");
+                    String startDate = popup.getStartDate().replace("-", ".");
+                    String endDate = popup.getEndDate().replace("-", ".");
 
-            boolean likeCheck = (user != null) && popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
+                    boolean likeCheck = (user != null) && popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
 
-            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck));
-        }
-        return popupResponses;
+                    return new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck);
+                })
+                .collect(Collectors.toList());
     }
 }
