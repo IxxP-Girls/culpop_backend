@@ -99,7 +99,7 @@ public class PopupController {
     }
 
     // 팝업 좋아요 취소
-    @DeleteMapping("/{popupId}/unlike")
+    @DeleteMapping("/{popupId}/like")
     private ResponseEntity<StatusResponse> unlikePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                        @PathVariable int popupId) {
         popupService.unlikePopup(userDetails.getUser(), popupId);

@@ -30,7 +30,7 @@ public class PopupService {
     public void createPopup(Admin admin, PopupRequest popupRequest) {
         Store store = saveStore(popupRequest.getStore(), popupRequest.getImageList());
         String time = convertTimeToJson(popupRequest.getTime());
-        Popup popup = createOrUpdatePopup(admin, store, popupRequest, time);
+        Popup popup = insertPopup(admin, store, popupRequest, time);
         saveTags(popupRequest.getTagList(), popup);
     }
 
@@ -108,13 +108,14 @@ public class PopupService {
         validateAdmin(popup, admin);
 
         List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
-        deleteExistingTags(popupTags, popup);
+        deletePopupTagsAndTags(popupTags, popup);
 
         popupMapper.deletePopup(popup);
         storeMapper.deleteStore(popup.getStore().getId());
     }
 
     // 팝업 좋아요
+    @Transactional
     public void likePopup(User user, int popupId) {
         Popup popup = getValidPopup(popupId);
         validatePopupLike(user, popupId);
@@ -124,6 +125,7 @@ public class PopupService {
     }
 
     // 팝업 좋아요 취소
+    @Transactional
     public void unlikePopup(User user, int popupId) {
         Popup popup = getValidPopup(popupId);
         validatePopupUnlike(user, popupId);
@@ -157,7 +159,7 @@ public class PopupService {
         }
     }
 
-    private Popup createOrUpdatePopup(Admin admin, Store store, PopupRequest popupRequest, String time) {
+    private Popup insertPopup(Admin admin, Store store, PopupRequest popupRequest, String time) {
         Popup popup = new Popup(admin, store, popupRequest.getTitle(), popupRequest.getContent(), time,
                 popupRequest.getAddress(), popupRequest.getStartDate(), popupRequest.getEndDate(),
                 popupRequest.getLatitude(), popupRequest.getLongitude(), popupRequest.getNotice(),
@@ -255,11 +257,11 @@ public class PopupService {
 
     private void updateTags(Popup popup, String tagList) {
         List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
-        deleteExistingTags(popupTags, popup);
+        deletePopupTagsAndTags(popupTags, popup);
         saveTags(tagList, popup);
     }
 
-    private void deleteExistingTags(List<PopupTag> popupTags, Popup popup) {
+    private void deletePopupTagsAndTags(List<PopupTag> popupTags, Popup popup) {
         popupTags.forEach(popupTag -> {
             popupTagMapper.deletePopupTag(popup.getId());
             tagMapper.deleteTag(popupTag.getTag().getId());
