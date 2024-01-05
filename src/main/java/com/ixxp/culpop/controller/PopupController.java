@@ -74,10 +74,10 @@ public class PopupController {
     @PatchMapping("/{popupId}")
     public ResponseEntity<StatusResponse> updatePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
                                                       @PathVariable int popupId,
-                                                      @RequestBody PopupUpdateRequest popupUpdateRequest) {
+                                                      @RequestBody PopupRequest popupRequest) {
+        popupService.updatePopup(adminDetails.getAdmin(), popupId, popupRequest);
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 수정 완료");
-        popupService.updatePopup(adminDetails.getAdmin(), popupId, popupUpdateRequest);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 삭제

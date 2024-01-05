@@ -84,51 +84,21 @@ public class PopupService {
 
     // 팝업 수정
     @Transactional
-    public void updatePopup(Admin admin, int popupId, PopupUpdateRequest popupUpdateRequest) {
-        Popup popup = popupMapper.selectPopup(popupId);
+    public void updatePopup(Admin admin, int popupId, PopupRequest popupRequest) {
+        Popup popup = getValidPopup(popupId);
+        validateAdmin(popup, admin);
 
-        if (popup == null) {
-            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
-        }
-        if (popup.getAdmin().getId() != admin.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
-        }
+        Store store = updateStore(popupRequest.getStore(), popupRequest.getImageList(), popup);
 
-        String image = JSONArray.toJSONString(popupUpdateRequest.getImageList());
-        Store store = storeMapper.selectStore(popup.getStore().getId());
-        store.updateStore(popupUpdateRequest.getStore(), image);
-        storeMapper.updateStore(store);
+        String time = convertTimeToJson(popupRequest.getTime());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String time = null;
-        try {
-            time = objectMapper.writeValueAsString(popupUpdateRequest.getTime());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        popup.updatePopup(admin, new Store(popupUpdateRequest.getStore(), image), popupUpdateRequest.getTitle(), popupUpdateRequest.getContent(), time, popupUpdateRequest.getAddress(),
-                popupUpdateRequest.getStartDate(), popupUpdateRequest.getEndDate(), popupUpdateRequest.getLatitude(), popupUpdateRequest.getLongitude(),
-                popupUpdateRequest.getNotice(), popupUpdateRequest.getStoreUrl(), popupUpdateRequest.getSnsUrl(), popupUpdateRequest.isParking(),
-                popupUpdateRequest.isFee(), popupUpdateRequest.isNoKids(), popupUpdateRequest.isPet(), popupUpdateRequest.isWifi());
+        popup.updatePopup(admin, store, popupRequest.getTitle(), popupRequest.getContent(), time, popupRequest.getAddress(),
+                popupRequest.getStartDate(), popupRequest.getEndDate(), popupRequest.getLatitude(), popupRequest.getLongitude(),
+                popupRequest.getNotice(), popupRequest.getStoreUrl(), popupRequest.getSnsUrl(), popupRequest.isParking(),
+                popupRequest.isFee(), popupRequest.isNoKids(), popupRequest.isPet(), popupRequest.isWifi());
         popupMapper.updatePopup(popup);
 
-        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
-        popupTagMapper.deletePopupTag(popupId);
-        for (PopupTag popupTag : popupTags) {
-            tagMapper.deleteTag(popupTag.getTag().getId());
-        }
-        insertTagsInSeparateTransaction(popup, popupUpdateRequest.getTagList());
-    }
-
-    @Transactional
-    public void insertTagsInSeparateTransaction(Popup popup, String tagList) {
-        String[] tagNameList = tagList.split(",");
-        for (String tagName : tagNameList) {
-            Tag tag = new Tag(tagName);
-            tagMapper.insertTag(tag);
-            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
-        }
+        updateTags(popup, popupRequest.getTagList());
     }
 
     // 팝업 삭제
@@ -221,7 +191,7 @@ public class PopupService {
         try {
             return objectMapper.writeValueAsString(time);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert time to JSON", e);
+            throw new RuntimeException("popup의 time을 JSON으로 변환하는데 실패했습니다.", e);
         }
     }
 
@@ -305,5 +275,32 @@ public class PopupService {
 
     private int getViewCountByPopupId(int popupId) {
         return popupMapper.selectViewCount(popupId);
+    }
+
+    private void validateAdmin(Popup popup, Admin admin) {
+        if (popup.getAdmin().getId() != admin.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+    }
+
+    private Store updateStore(String storeName, List<String> imageList, Popup popup) {
+        String image = JSONArray.toJSONString(imageList);
+        Store store = storeMapper.selectStore(popup.getStore().getId());
+        store.updateStore(storeName, image);
+        storeMapper.updateStore(store);
+        return store;
+    }
+
+    private void updateTags(Popup popup, String tagList) {
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
+        deleteExistingTags(popupTags, popup);
+        saveTags(tagList, popup);
+    }
+
+    private void deleteExistingTags(List<PopupTag> popupTags, Popup popup) {
+        popupTags.forEach(popupTag -> {
+            popupTagMapper.deletePopupTag(popup.getId());
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        });
     }
 }
