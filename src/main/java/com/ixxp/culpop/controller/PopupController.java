@@ -74,47 +74,46 @@ public class PopupController {
     @PatchMapping("/{popupId}")
     public ResponseEntity<StatusResponse> updatePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
                                                       @PathVariable int popupId,
-                                                      @RequestBody PopupUpdateRequest popupUpdateRequest) {
+                                                      @RequestBody PopupRequest popupRequest) {
+        popupService.updatePopup(adminDetails.getAdmin(), popupId, popupRequest);
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 수정 완료");
-        popupService.updatePopup(adminDetails.getAdmin(), popupId, popupUpdateRequest);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 삭제
     @DeleteMapping("/{popupId}")
     public ResponseEntity<StatusResponse> deletePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
                                                       @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
         popupService.deletePopup(adminDetails.getAdmin(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 좋아요
     @PostMapping("/{popupId}/like")
     public ResponseEntity<StatusResponse> likePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                      @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 좋아요 완료");
         popupService.likePopup(userDetails.getUser(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 좋아요 완료");
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
 
     // 팝업 좋아요 취소
-    @DeleteMapping("/{popupId}/unlike")
+    @DeleteMapping("/{popupId}/like")
     private ResponseEntity<StatusResponse> unlikePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                        @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
         popupService.unlikePopup(userDetails.getUser(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 검색
     @GetMapping("/search")
     public ResponseEntity<List<PopupResponse>> getSearchPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @RequestParam("word") String word,
-                                                              @RequestParam("page") int page,
-                                                              @RequestParam("size") int size) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page, size);
+                                                              @RequestParam(name = "page", defaultValue = "1") int page) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 

@@ -30,7 +30,7 @@ public class PopupService {
     public void createPopup(Admin admin, PopupRequest popupRequest) {
         Store store = saveStore(popupRequest.getStore(), popupRequest.getImageList());
         String time = convertTimeToJson(popupRequest.getTime());
-        Popup popup = createOrUpdatePopup(admin, store, popupRequest, time);
+        Popup popup = insertPopup(admin, store, popupRequest, time);
         saveTags(popupRequest.getTagList(), popup);
     }
 
@@ -84,100 +84,51 @@ public class PopupService {
 
     // 팝업 수정
     @Transactional
-    public void updatePopup(Admin admin, int popupId, PopupUpdateRequest popupUpdateRequest) {
-        Popup popup = popupMapper.selectPopup(popupId);
+    public void updatePopup(Admin admin, int popupId, PopupRequest popupRequest) {
+        Popup popup = getValidPopup(popupId);
+        validateAdmin(popup, admin);
 
-        if (popup == null) {
-            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
-        }
-        if (popup.getAdmin().getId() != admin.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
-        }
+        Store store = updateStore(popupRequest.getStore(), popupRequest.getImageList(), popup);
 
-        String image = JSONArray.toJSONString(popupUpdateRequest.getImageList());
-        Store store = storeMapper.selectStore(popup.getStore().getId());
-        store.updateStore(popupUpdateRequest.getStore(), image);
-        storeMapper.updateStore(store);
+        String time = convertTimeToJson(popupRequest.getTime());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String time = null;
-        try {
-            time = objectMapper.writeValueAsString(popupUpdateRequest.getTime());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        popup.updatePopup(admin, new Store(popupUpdateRequest.getStore(), image), popupUpdateRequest.getTitle(), popupUpdateRequest.getContent(), time, popupUpdateRequest.getAddress(),
-                popupUpdateRequest.getStartDate(), popupUpdateRequest.getEndDate(), popupUpdateRequest.getLatitude(), popupUpdateRequest.getLongitude(),
-                popupUpdateRequest.getNotice(), popupUpdateRequest.getStoreUrl(), popupUpdateRequest.getSnsUrl(), popupUpdateRequest.isParking(),
-                popupUpdateRequest.isFee(), popupUpdateRequest.isNoKids(), popupUpdateRequest.isPet(), popupUpdateRequest.isWifi());
+        popup.updatePopup(admin, store, popupRequest.getTitle(), popupRequest.getContent(), time, popupRequest.getAddress(),
+                popupRequest.getStartDate(), popupRequest.getEndDate(), popupRequest.getLatitude(), popupRequest.getLongitude(),
+                popupRequest.getNotice(), popupRequest.getStoreUrl(), popupRequest.getSnsUrl(), popupRequest.isParking(),
+                popupRequest.isFee(), popupRequest.isNoKids(), popupRequest.isPet(), popupRequest.isWifi());
         popupMapper.updatePopup(popup);
 
-        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
-        popupTagMapper.deletePopupTag(popupId);
-        for (PopupTag popupTag : popupTags) {
-            tagMapper.deleteTag(popupTag.getTag().getId());
-        }
-        insertTagsInSeparateTransaction(popup, popupUpdateRequest.getTagList());
-    }
-
-    @Transactional
-    public void insertTagsInSeparateTransaction(Popup popup, String tagList) {
-        String[] tagNameList = tagList.split(",");
-        for (String tagName : tagNameList) {
-            Tag tag = new Tag(tagName);
-            tagMapper.insertTag(tag);
-            popupTagMapper.insertPopupTag(new PopupTag(popup, tag));
-        }
+        updateTags(popup, popupRequest.getTagList());
     }
 
     // 팝업 삭제
     @Transactional
     public void deletePopup(Admin admin, int popupId) {
-        Popup popup = popupMapper.selectPopup(popupId);
+        Popup popup = getValidPopup(popupId);
+        validateAdmin(popup, admin);
 
-        if (popup == null) {
-            throw new IllegalArgumentException("popup 이 존재하지 않습니다.");
-        }
-        if (popup.getAdmin().getId() != admin.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
-        }
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
+        deletePopupTagsAndTags(popupTags, popup);
 
-        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popupId);
-
-        popupTagMapper.deletePopupTag(popupId);
-        for (PopupTag popupTag : popupTags) {
-            tagMapper.deleteTag(popupTag.getTag().getId());
-        }
         popupMapper.deletePopup(popup);
         storeMapper.deleteStore(popup.getStore().getId());
     }
 
     // 팝업 좋아요
+    @Transactional
     public void likePopup(User user, int popupId) {
-        Popup popup = popupMapper.selectPopup(popupId);
-        if (popup == null) {
-            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
-        }
-
-        if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
-            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
-        }
+        Popup popup = getValidPopup(popupId);
+        validatePopupLike(user, popupId);
 
         PopupLike popupLike = new PopupLike(user, popup);
         popupLikeMapper.insertPopupLike(popupLike);
     }
 
     // 팝업 좋아요 취소
+    @Transactional
     public void unlikePopup(User user, int popupId) {
-        Popup popup = popupMapper.selectPopup(popupId);
-        if (popup == null) {
-            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
-        }
-
-        if (!popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
-            throw new IllegalArgumentException("popup 좋아요를 누르지 않았습니다.");
-        }
+        Popup popup = getValidPopup(popupId);
+        validatePopupUnlike(user, popupId);
 
         PopupLike popupLike = new PopupLike(user, popup);
         popupLikeMapper.deletePopupLike(popupLike);
@@ -185,28 +136,11 @@ public class PopupService {
 
     // 팝업 검색
     @Transactional
-    public List<PopupResponse> getSearchPopup(User user, String word, int page, int size) {
-        int offset = (page - 1) * size;
-        List<Popup> popups = popupMapper.selectSearchPopup(word, offset, size);
-        List<PopupResponse> popupResponses = new ArrayList<>();
-        for (Popup popup : popups) {
-            org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
-            String image = jsonArray.getString(0);
+    public List<PopupResponse> getSearchPopup(User user, String word, int page) {
+        int offset = (page - 1) * 10;
+        List<Popup> popups = popupMapper.selectSearchPopup(word, offset);
 
-            String fullAddress = popup.getAddress();
-            String address = fullAddress.substring(0,fullAddress.indexOf(" ", fullAddress.indexOf(" ") + 1));
-
-            String startDate = popup.getStartDate().replace("-", ".");
-            String endDate = popup.getEndDate().replace("-", ".");
-
-            boolean likeCheck = false;
-            if (user != null) {
-                likeCheck = popupLikeMapper.checkPopupLike(user.getId(), popup.getId());
-            }
-
-            popupResponses.add(new PopupResponse(popup.getId(), image, popup.getTitle(), address, startDate, endDate, likeCheck));
-        }
-        return popupResponses;
+        return convertToPopupResponseList(user, popups);
     }
 
     private Store saveStore(String storeName, List<String> imageList) {
@@ -221,11 +155,11 @@ public class PopupService {
         try {
             return objectMapper.writeValueAsString(time);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert time to JSON", e);
+            throw new RuntimeException("popup의 time을 JSON으로 변환하는데 실패했습니다.", e);
         }
     }
 
-    private Popup createOrUpdatePopup(Admin admin, Store store, PopupRequest popupRequest, String time) {
+    private Popup insertPopup(Admin admin, Store store, PopupRequest popupRequest, String time) {
         Popup popup = new Popup(admin, store, popupRequest.getTitle(), popupRequest.getContent(), time,
                 popupRequest.getAddress(), popupRequest.getStartDate(), popupRequest.getEndDate(),
                 popupRequest.getLatitude(), popupRequest.getLongitude(), popupRequest.getNotice(),
@@ -305,5 +239,44 @@ public class PopupService {
 
     private int getViewCountByPopupId(int popupId) {
         return popupMapper.selectViewCount(popupId);
+    }
+
+    private void validateAdmin(Popup popup, Admin admin) {
+        if (popup.getAdmin().getId() != admin.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+    }
+
+    private Store updateStore(String storeName, List<String> imageList, Popup popup) {
+        String image = JSONArray.toJSONString(imageList);
+        Store store = storeMapper.selectStore(popup.getStore().getId());
+        store.updateStore(storeName, image);
+        storeMapper.updateStore(store);
+        return store;
+    }
+
+    private void updateTags(Popup popup, String tagList) {
+        List<PopupTag> popupTags = popupTagMapper.selectPopupTag(popup.getId());
+        deletePopupTagsAndTags(popupTags, popup);
+        saveTags(tagList, popup);
+    }
+
+    private void deletePopupTagsAndTags(List<PopupTag> popupTags, Popup popup) {
+        popupTags.forEach(popupTag -> {
+            popupTagMapper.deletePopupTag(popup.getId());
+            tagMapper.deleteTag(popupTag.getTag().getId());
+        });
+    }
+
+    private void validatePopupLike(User user, int popupId) {
+        if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+        }
+    }
+
+    private void validatePopupUnlike(User user, int popupId) {
+        if (!popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
+            throw new IllegalArgumentException("팝업 좋아요를 누르지 않았습니다.");
+        }
     }
 }
