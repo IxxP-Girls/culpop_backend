@@ -102,9 +102,9 @@ public class PopupController {
     @DeleteMapping("/{popupId}/unlike")
     private ResponseEntity<StatusResponse> unlikePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                        @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
         popupService.unlikePopup(userDetails.getUser(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 검색
