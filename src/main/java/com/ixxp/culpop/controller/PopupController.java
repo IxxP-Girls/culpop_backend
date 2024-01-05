@@ -93,9 +93,9 @@ public class PopupController {
     @PostMapping("/{popupId}/like")
     public ResponseEntity<StatusResponse> likePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                      @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 좋아요 완료");
         popupService.likePopup(userDetails.getUser(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.CREATED);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "popup 좋아요 완료");
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
 
     // 팝업 좋아요 취소

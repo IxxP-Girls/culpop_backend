@@ -116,14 +116,8 @@ public class PopupService {
 
     // 팝업 좋아요
     public void likePopup(User user, int popupId) {
-        Popup popup = popupMapper.selectPopup(popupId);
-        if (popup == null) {
-            throw new IllegalArgumentException("Popup 이 존재하지 않습니다.");
-        }
-
-        if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
-            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
-        }
+        Popup popup = getValidPopup(popupId);
+        validatePopupLike(user, popupId);
 
         PopupLike popupLike = new PopupLike(user, popup);
         popupLikeMapper.insertPopupLike(popupLike);
@@ -293,5 +287,11 @@ public class PopupService {
             popupTagMapper.deletePopupTag(popup.getId());
             tagMapper.deleteTag(popupTag.getTag().getId());
         });
+    }
+
+    private void validatePopupLike(User user, int popupId) {
+        if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+        }
     }
 }
