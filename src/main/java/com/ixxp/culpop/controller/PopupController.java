@@ -84,9 +84,9 @@ public class PopupController {
     @DeleteMapping("/{popupId}")
     public ResponseEntity<StatusResponse> deletePopup(@AuthenticationPrincipal AdminDetailsImpl adminDetails,
                                                       @PathVariable int popupId) {
-        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
         popupService.deletePopup(adminDetails.getAdmin(), popupId);
-        return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 삭제 완료");
+        return ResponseEntity.ok(statusResponse);
     }
 
     // 팝업 좋아요
