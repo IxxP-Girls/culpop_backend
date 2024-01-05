@@ -15,7 +15,7 @@ public interface PopupMapper {
     List<Popup> selectPopupList(String area,String startDate, String endDate, int offset);
     Popup selectPopupDetail(int popupId);
     List<Popup> selectProfilePopup(User user, String sort);
-    List<Popup> selectSearchPopup(String word, int offset, int size);
+    List<Popup> selectSearchPopup(String word, int offset);
     int selectViewCount(int popupId);
     void updateViewCount(int popupId);
     void updatePopup(Popup popup);

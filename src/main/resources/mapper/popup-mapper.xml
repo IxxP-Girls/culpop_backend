@@ -123,7 +123,7 @@
         EXISTS (SELECT 1 FROM popupTag pt JOIN tag t ON pt.tagId = t.id WHERE pt.popupId = p.id AND t.tagName LIKE CONCAT('%', #{word}, '%')))
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
-        LIMIT #{offset}, #{size};
+        LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectViewCount" parameterType="int" resultType="int">
         SELECT viewCount FROM Popup WHERE id = #{popupId};

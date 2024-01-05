@@ -111,10 +111,9 @@ public class PopupController {
     @GetMapping("/search")
     public ResponseEntity<List<PopupResponse>> getSearchPopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               @RequestParam("word") String word,
-                                                              @RequestParam("page") int page,
-                                                              @RequestParam("size") int size) {
-        User user = (userDetails != null) ? userDetails.getUser() : new User();
-        List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page, size);
+                                                              @RequestParam(name = "page", defaultValue = "1") int page) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        List<PopupResponse> popupResponses = popupService.getSearchPopup(user, word, page);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 
