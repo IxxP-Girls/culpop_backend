@@ -1,6 +1,7 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.post.PostDetailResponse;
 import com.ixxp.culpop.dto.post.PostRequest;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.security.UserDetailsImpl;
@@ -33,5 +34,11 @@ public class PostController {
     public ResponseEntity<List<PostResponse>> getPost(@RequestParam(name = "category", defaultValue = "all") String category
                                                     , @RequestParam(name = "page", defaultValue = "1") int page) {
         return ResponseEntity.ok(postService.getPost(category, page));
+    }
+
+    // 게시글 개별 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable int postId) {
+        return ResponseEntity.ok(postService.getPostDetail(postId));
     }
 }

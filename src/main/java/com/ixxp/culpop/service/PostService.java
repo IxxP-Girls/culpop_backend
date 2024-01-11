@@ -1,5 +1,6 @@
 package com.ixxp.culpop.service;
 
+import com.ixxp.culpop.dto.post.PostDetailResponse;
 import com.ixxp.culpop.dto.post.PostRequest;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.entity.Category;
@@ -41,5 +42,20 @@ public class PostService {
         return posts.stream().map(post ->
              new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
         ).collect(Collectors.toList());
+    }
+
+    // 게시글 개별 조회
+    public PostDetailResponse getPostDetail(int postId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        // postlike 확인 후 개수만 가져오기
+        int likeCount = 0;
+        // 댓글 id, 개수 가져오기
+
+        return new PostDetailResponse(postId, post.getUser().getUsername(), post.getTitle(), post.getContent()
+                , post.getCreatedAt(), post.getModifiedAt(), likeCount, post.getViewCount(), post.getCategory().getCateName());
     }
 }

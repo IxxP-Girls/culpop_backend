@@ -9,4 +9,5 @@ import java.util.List;
 public interface PostMapper {
     void insertPost(Post post);
     List<Post> selectPost(String category, int offset);
+    Post selectPostDetail(int postId);
 }

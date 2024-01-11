@@ -16,6 +16,22 @@
             <result property="cateName" column="cateName" />
         </collection>
     </resultMap>
+    <resultMap id="postDetailResult" type="post">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="createdAt" column="createdAt" />
+        <result property="modifiedAt" column="modifiedAt" />
+        <result property="viewCount" column="viewCount" />
+        <collection property="user" javaType="User">
+            <id property="id" column="userId" />
+            <result property="username" column="username" />
+        </collection>
+        <collection property="category" javaType="Category">
+            <id property="id" column="categoryId" />
+            <result property="cateName" column="cateName" />
+        </collection>
+    </resultMap>
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO Post (userId, categoryId, title, content, viewCount) VALUES (#{user.id}, #{category.id}, #{title}, #{content}, #{viewCount})
     </insert>
@@ -32,5 +48,11 @@
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
         ORDER BY p.createdAt
         LIMIT 10 OFFSET #{offset};
+    </select>
+    <select id="selectPostDetail" parameterType="int" resultMap="postDetailResult">
+        SELECT * FROM Post p
+        LEFT JOIN User u ON p.userId = u.id
+        LEFT JOIN Category c ON p.categoryId = c.id
+        WHERE p.id=#{id}
     </select>
 </mapper>
