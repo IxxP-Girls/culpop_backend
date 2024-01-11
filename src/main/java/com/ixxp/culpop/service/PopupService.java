@@ -178,7 +178,7 @@ public class PopupService {
         }
     }
 
-    private List<PopupResponse> convertToPopupResponseList(User user, List<Popup> popups) {
+    public List<PopupResponse> convertToPopupResponseList(User user, List<Popup> popups) {
         return popups.stream()
                 .map(popup -> {
                     org.json.JSONArray jsonArray = new org.json.JSONArray(popup.getStore().getImage());
