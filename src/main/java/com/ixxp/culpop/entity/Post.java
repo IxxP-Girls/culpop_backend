@@ -37,4 +37,11 @@ public class Post{
         this.content = content;
         this.viewCount = 0;
     }
+
+    public void updatePost(User user, Category category, String title, String content) {
+        this.user = user;
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
 }

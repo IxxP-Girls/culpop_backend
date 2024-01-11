@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,5 +58,31 @@ public class PostService {
 
         return new PostDetailResponse(postId, post.getUser().getUsername(), post.getTitle(), post.getContent()
                 , post.getCreatedAt(), post.getModifiedAt(), likeCount, post.getViewCount(), post.getCategory().getCateName());
+    }
+
+    // 게시글 수정
+    @Transactional
+    public void updatePost(User user, int postId, PostRequest postRequest) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        if (post.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        String cateName = postRequest.getCateName();
+        Category category = post.getCategory();
+        if (!Objects.equals(cateName, post.getCategory().getCateName())) {
+            category = categoryMapper.selectCategory(cateName);
+            if (category == null) {
+                category = new Category(cateName);
+                categoryMapper.insertCategory(category);
+            }
+        }
+
+        post.updatePost(user, category, postRequest.getTitle(), postRequest.getContent());
+        postMapper.updatePost(post);
     }
 }

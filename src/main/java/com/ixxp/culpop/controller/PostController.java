@@ -41,4 +41,14 @@ public class PostController {
     public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable int postId) {
         return ResponseEntity.ok(postService.getPostDetail(postId));
     }
+
+    // 게시글 수정
+    @PatchMapping("/{postId}")
+    public ResponseEntity<StatusResponse> updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                     @PathVariable int postId,
+                                                     @RequestBody PostRequest postRequest) {
+        postService.updatePost(userDetails.getUser(), postId, postRequest);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "post 수정 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }

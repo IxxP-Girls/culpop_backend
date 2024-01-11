@@ -10,4 +10,5 @@ public interface PostMapper {
     void insertPost(Post post);
     List<Post> selectPost(String category, int offset);
     Post selectPostDetail(int postId);
+    void updatePost(Post post);
 }

@@ -55,4 +55,8 @@
         LEFT JOIN Category c ON p.categoryId = c.id
         WHERE p.id=#{id}
     </select>
+    <update id="updatePost" parameterType="post">
+        UPDATE Post SET title=#{title}, content=#{content}, categoryId=#{category.id}
+        WHERE id=#{id}
+    </update>
 </mapper>
