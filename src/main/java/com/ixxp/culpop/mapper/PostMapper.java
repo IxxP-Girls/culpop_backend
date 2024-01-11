@@ -10,7 +10,8 @@ public interface PostMapper {
     void insertPost(Post post);
     List<Post> selectPost(String category, int offset);
     Post selectPostDetail(int postId);
+    List<Post> selectSearchPost(String word, int offset);
+    List<Post> selectPostByUserId(int userId);
     void updatePost(Post post);
     void deletePost(int postId);
-    List<Post> selectSearchPost(String word, int offset);
 }

@@ -1,15 +1,18 @@
 package com.ixxp.culpop.service;
 
 import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.dto.user.ProfileResponse;
 import com.ixxp.culpop.dto.user.ProfileUpdateRequest;
 import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
 import com.ixxp.culpop.entity.Popup;
+import com.ixxp.culpop.entity.Post;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.entity.UserRoleEnum;
 import com.ixxp.culpop.mapper.PopupLikeMapper;
 import com.ixxp.culpop.mapper.PopupMapper;
+import com.ixxp.culpop.mapper.PostMapper;
 import com.ixxp.culpop.mapper.UserMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PopupMapper popupMapper;
     private final PopupLikeMapper popupLikeMapper;
+    private final PostMapper postMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -78,7 +83,11 @@ public class UserService {
     // 프로필 조회
     public ProfileResponse getProfile(int userId) {
         User user = userMapper.getProfile(userId);
-        return new ProfileResponse(user);
+        List<Post> posts = postMapper.selectPostByUserId(userId);
+        List<PostResponse> postList = posts.stream().map(post ->
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
+        ).collect(Collectors.toList());
+        return new ProfileResponse(user, postList);
     }
 
     // 프로필 관심 팝업 조회
