@@ -11,4 +11,5 @@ public interface PostMapper {
     List<Post> selectPost(String category, int offset);
     Post selectPostDetail(int postId);
     void updatePost(Post post);
+    void deletePost(int postId);
 }

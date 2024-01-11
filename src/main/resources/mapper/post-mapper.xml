@@ -59,4 +59,7 @@
         UPDATE Post SET title=#{title}, content=#{content}, categoryId=#{category.id}
         WHERE id=#{id}
     </update>
+    <delete id="deletePost" parameterType="post">
+        DELETE FROM Post WHERE id = #{id}
+    </delete>
 </mapper>

@@ -51,4 +51,13 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "post 수정 완료");
         return ResponseEntity.ok(statusResponse);
     }
+
+    // 게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<StatusResponse> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                     @PathVariable int postId) {
+        postService.deletePopup(userDetails.getUser(), postId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "post 삭제 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }

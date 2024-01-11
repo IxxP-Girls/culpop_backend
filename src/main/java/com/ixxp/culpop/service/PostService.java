@@ -85,4 +85,19 @@ public class PostService {
         post.updatePost(user, category, postRequest.getTitle(), postRequest.getContent());
         postMapper.updatePost(post);
     }
+
+    // 게시글 삭제
+    @Transactional
+    public void deletePopup(User user, int postId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        if (post.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        postMapper.deletePost(postId);
+    }
 }
