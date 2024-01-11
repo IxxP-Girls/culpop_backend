@@ -60,4 +60,13 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "post 삭제 완료");
         return ResponseEntity.ok(statusResponse);
     }
+
+    // 게시글 좋아요
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<StatusResponse> likePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @PathVariable int postId) {
+        postService.likePost(userDetails.getUser(), postId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "post 좋아요 완료");
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
+    }
 }

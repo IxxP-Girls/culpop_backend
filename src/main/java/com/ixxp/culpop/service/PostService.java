@@ -5,8 +5,10 @@ import com.ixxp.culpop.dto.post.PostRequest;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.entity.Category;
 import com.ixxp.culpop.entity.Post;
+import com.ixxp.culpop.entity.PostLike;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.mapper.CategoryMapper;
+import com.ixxp.culpop.mapper.PostLikeMapper;
 import com.ixxp.culpop.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class PostService {
     private final CategoryMapper categoryMapper;
     private final PostMapper postMapper;
+    private final PostLikeMapper postLikeMapper;
 
     // 게시글 등록
     @Transactional
@@ -99,5 +102,19 @@ public class PostService {
         }
 
         postMapper.deletePost(postId);
+    }
+
+    // 게시글 좋아요
+    public void likePost(User user, int postId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+        if (postLikeMapper.checkPostLike(user.getId(), postId)) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+        }
+
+        PostLike postLike = new PostLike(user, post);
+        postLikeMapper.insertPostLike(postLike);
     }
 }

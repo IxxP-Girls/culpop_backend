@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ixxp.culpop.mapper.PostLikeMapper">
+    <insert id="insertPostLike" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO PostLike (userId, postId) VALUES (#{user.id}, #{post.id})
+    </insert>
+    <select id="checkPostLike" parameterType="int" resultType="boolean">
+        SELECT IF(COUNT(*) = 1, 1, 0) FROM PostLike WHERE userId=#{userId} and postId=#{postId}
+    </select>
+</mapper>
