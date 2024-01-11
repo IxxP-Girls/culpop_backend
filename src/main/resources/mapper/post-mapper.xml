@@ -65,6 +65,15 @@
         ORDER BY p.createdAt
         LIMIT 10 OFFSET #{offset};
     </select>
+    <select id="selectPostByUserId" parameterType="int" resultMap="postDetailResult">
+        SELECT p.id, p.title, p.createdAt, u.id AS userId, u.username, c.id AS categoryId, c.cateName
+        FROM Post p
+        LEFT JOIN User u ON p.userId = u.id
+        LEFT JOIN Category c ON p.categoryId = c.id
+        WHERE p.userId=#{userId}
+        GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
+        ORDER BY p.createdAt
+    </select>
     <update id="updatePost" parameterType="post">
         UPDATE Post SET title=#{title}, content=#{content}, categoryId=#{category.id}
         WHERE id=#{id}
