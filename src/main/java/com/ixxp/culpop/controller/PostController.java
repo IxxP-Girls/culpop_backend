@@ -78,4 +78,12 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
         return ResponseEntity.ok(statusResponse);
     }
+
+    // 게시글 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<PostResponse>> getSearchPost(@RequestParam("word") String word,
+                                                            @RequestParam(name = "page", defaultValue = "1") int page) {
+        List<PostResponse> postResponses = postService.getSearchPost(word, page);
+        return ResponseEntity.ok(postResponses);
+    }
 }

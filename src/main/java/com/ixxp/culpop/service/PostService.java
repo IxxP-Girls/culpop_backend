@@ -133,4 +133,13 @@ public class PostService {
         PostLike postLike = new PostLike(user, post);
         postLikeMapper.deletePostLike(postLike);
     }
+
+    // 게시글 검색
+    public List<PostResponse> getSearchPost(String word, int page) {
+        int offset = (page - 1) * 10;
+        List<Post> posts = postMapper.selectSearchPost(word, offset);
+        return posts.stream().map(post ->
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
+        ).collect(Collectors.toList());
+    }
 }
