@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -24,6 +25,10 @@ public class Post{
     private String content;
     @Column(nullable = false)
     private int viewCount;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime modifiedAt;
 
     public Post(User user, Category category, String title, String content) {
         this.user = user;

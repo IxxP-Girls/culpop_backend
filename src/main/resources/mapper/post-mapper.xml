@@ -3,7 +3,34 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.PostMapper">
+    <resultMap id="postResult" type="post">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="createdAt" column="createdAt" />
+        <collection property="user" javaType="User">
+            <id property="id" column="userId" />
+            <result property="username" column="username" />
+        </collection>
+        <collection property="category" javaType="Category">
+            <id property="id" column="categoryId" />
+            <result property="cateName" column="cateName" />
+        </collection>
+    </resultMap>
     <insert id="insertPost" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO Post (userId, categoryId, title, content, viewCount) VALUES (#{user.id}, #{category.id}, #{title}, #{content}, #{viewCount})
     </insert>
+    <select id="selectPost" resultMap="postResult">
+        SELECT p.id, p.title, p.createdAt, u.id AS userId, u.username, c.id AS categoryId, c.cateName
+        FROM Post p
+        LEFT JOIN User u ON p.userId = u.id
+        LEFT JOIN Category c ON p.categoryId = c.id
+        <where>
+            <if test="category != 'all' and category != ''">
+                cateName = #{category}
+            </if>
+        </where>
+        GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
+        ORDER BY p.createdAt
+        LIMIT 10 OFFSET #{offset};
+    </select>
 </mapper>
