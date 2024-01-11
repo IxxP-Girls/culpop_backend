@@ -69,4 +69,13 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "post 좋아요 완료");
         return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
+
+    // 게시글 좋아요 취소
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<StatusResponse> unlikePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                     @PathVariable int postId) {
+        postService.unlikePost(userDetails.getUser(), postId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "popup 좋아요 취소 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }

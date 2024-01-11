@@ -105,6 +105,7 @@ public class PostService {
     }
 
     // 게시글 좋아요
+    @Transactional
     public void likePost(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
@@ -116,5 +117,20 @@ public class PostService {
 
         PostLike postLike = new PostLike(user, post);
         postLikeMapper.insertPostLike(postLike);
+    }
+
+    // 게시글 좋아요 취소
+    @Transactional
+    public void unlikePost(User user, int postId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+        if (!postLikeMapper.checkPostLike(user.getId(), postId)) {
+            throw new IllegalArgumentException("좋아요를 누르지 않았습니다.");
+        }
+
+        PostLike postLike = new PostLike(user, post);
+        postLikeMapper.deletePostLike(postLike);
     }
 }
