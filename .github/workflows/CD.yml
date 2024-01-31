@@ -63,7 +63,7 @@ jobs:
       - name: Deploy
         run: |
           aws deploy create-deployment \
-          --application-name culpop-project \
+          --application-name culpop_project \
           --deployment-config-name CodeDeployDefault.AllAtOnce \
           --deployment-group-name culpop \
           --file-exists-behavior OVERWRITE \
