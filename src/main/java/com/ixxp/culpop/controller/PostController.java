@@ -1,10 +1,12 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
+import com.ixxp.culpop.dto.post.CommentRequest;
 import com.ixxp.culpop.dto.post.PostDetailResponse;
 import com.ixxp.culpop.dto.post.PostRequest;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.security.UserDetailsImpl;
+import com.ixxp.culpop.service.CommentService;
 import com.ixxp.culpop.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
     // 게시글 등록
     @PostMapping()
@@ -85,5 +88,15 @@ public class PostController {
                                                             @RequestParam(name = "page", defaultValue = "1") int page) {
         List<PostResponse> postResponses = postService.getSearchPost(word, page);
         return ResponseEntity.ok(postResponses);
+    }
+
+    // 댓글 등록
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<StatusResponse> createComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable int postId,
+                                                        @RequestBody CommentRequest commentRequest) {
+        commentService.createComment(userDetails.getUser(), postId, commentRequest);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "comment 등록 완료");
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
 }
