@@ -3,7 +3,38 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ixxp.culpop.mapper.CommentMapper">
+    <resultMap id="commentResult" type="comment">
+        <id property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="secret" column="secret"/>
+        <result property="parentId" column="parentId"/>
+        <result property="createdAt" column="createdAt"/>
+        <result property="modifiedAt" column="modifiedAt"/>
+        <collection property="user" javaType="User">
+            <id property="id" column="userId" />
+            <result property="username" column="username" />
+        </collection>
+        <collection property="post" javaType="Post">
+            <id property="id" column="postId" />
+        </collection>
+    </resultMap>
     <insert id="insertComment" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO Comment (userId, postId, content, secret, parentId) VALUES (#{user.id}, #{post.id}, #{content}, #{secret}, #{parentId})
     </insert>
+    <select id="selectCommentDetail" parameterType="int" resultMap="commentResult">
+        SELECT c.id, c.content, c.secret, c.parentId, c.createdAt, u.id AS userId, u.username, p.id AS postId
+        FROM Comment c
+        LEFT JOIN User u ON c.userId = u.id
+        LEFT JOIN Post p on c.postId = p.id
+        WHERE c.id=#{commentId}
+        GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username, p.id
+        ORDER BY c.createdAt;
+    </select>
+    <update id="updateComment" parameterType="Comment">
+        UPDATE Comment SET content=#{content}, secret=#{secret}, parentId=#{parentId}
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteComment" parameterType="Comment">
+        DELETE FROM Comment WHERE id=#{id}
+    </delete>
 </mapper>
