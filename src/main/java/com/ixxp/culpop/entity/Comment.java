@@ -36,4 +36,12 @@ public class Comment {
         this.secret = secret;
         this.parentId = parentId;
     }
+
+    public void updateComment(User user, Post post, String content, boolean secret, int parentId) {
+        this.user = user;
+        this.post = post;
+        this.content = content;
+        this.secret = secret;
+        this.parentId = parentId;
+    }
 }

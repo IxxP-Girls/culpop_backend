@@ -99,4 +99,17 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "comment 등록 완료");
         return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
     }
+
+    // 댓글 조회
+
+    // 댓글 수정
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<StatusResponse> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable int postId,
+                                                        @PathVariable int commentId,
+                                                        @RequestBody CommentRequest commentRequest) {
+        commentService.updateComment(userDetails.getUser(), postId, commentId, commentRequest);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "comment 수정 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }
