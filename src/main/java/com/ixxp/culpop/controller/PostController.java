@@ -112,4 +112,14 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "comment 수정 완료");
         return ResponseEntity.ok(statusResponse);
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<StatusResponse> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable int postId,
+                                                        @PathVariable int commentId) {
+        commentService.deleteComment(userDetails.getUser(), postId, commentId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "comment 삭제 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }

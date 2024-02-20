@@ -50,4 +50,29 @@ public class CommentService {
         comment.updateComment(user, post, commentRequest.getContent(), commentRequest.isSecret(), commentRequest.getParentId());
         commentMapper.updateComment(comment);
     }
+
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(User user, int postId, int commentId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        Comment comment = commentMapper.selectCommentDetail(commentId);
+        if (comment == null) {
+            throw new IllegalArgumentException("comment가 존재하지 않습니다.");
+        }
+
+        if (comment.getUser().getId() != user.getId()) {
+            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+        }
+
+        if (comment.getPost().getId() != postId) {
+            throw new IllegalArgumentException("post를 잘못 입력하였습니다.");
+        }
+
+        commentMapper.deleteComment(commentId);
+    }
 }

@@ -8,4 +8,5 @@ public interface CommentMapper {
     void insertComment(Comment comment);
     Comment selectCommentDetail(int commentId);
     void updateComment(Comment comment);
+    void deleteComment(int commentId);
 }
