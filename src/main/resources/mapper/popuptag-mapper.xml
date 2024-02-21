@@ -19,7 +19,7 @@
     </insert>
     <select id="selectPopupTag" parameterType="int" resultMap="popuptagResult">
         SELECT * from PopupTag pt
-        LEFT JOIN tag t ON pt.tagId = t.id
+        LEFT JOIN Tag t ON pt.tagId = t.id
         WHERE popupId=#{popupId}
     </select>
     <delete id="deletePopupTag" parameterType="int">
