@@ -17,7 +17,9 @@ public class PostDetailResponse {
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime modifiedAt;
+    private String cateName;
+    private boolean likeCheck;
     private int likeCount;
     private int viewCount;
-    private String cateName;
+    private int commentCount;
 }

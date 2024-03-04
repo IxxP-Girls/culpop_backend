@@ -8,6 +8,7 @@ import com.ixxp.culpop.entity.Post;
 import com.ixxp.culpop.entity.PostLike;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.mapper.CategoryMapper;
+import com.ixxp.culpop.mapper.CommentMapper;
 import com.ixxp.culpop.mapper.PostLikeMapper;
 import com.ixxp.culpop.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class PostService {
     private final CategoryMapper categoryMapper;
     private final PostMapper postMapper;
     private final PostLikeMapper postLikeMapper;
+    private final CommentMapper commentMapper;
 
     // 게시글 등록
     @Transactional
@@ -49,18 +51,22 @@ public class PostService {
     }
 
     // 게시글 개별 조회
-    public PostDetailResponse getPostDetail(int postId) {
+    public PostDetailResponse getPostDetail(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
             throw new IllegalArgumentException("post가 존재하지 않습니다.");
         }
 
-        // postlike 확인 후 개수만 가져오기
-        int likeCount = 0;
-        // 댓글 id, 개수 가져오기
+        boolean likeCheck = (user != null) && postLikeMapper.checkPostLike(user.getId(), postId);
+        int likeCount = postLikeMapper.countLikesByPostId(postId);
+
+        postMapper.updatePostViewCount(postId);
+        int viewCount = postMapper.selectPostViewCount(postId);
+
+        int commentCount = commentMapper.countCommentsByPostId(postId);
 
         return new PostDetailResponse(postId, post.getUser().getUsername(), post.getTitle(), post.getContent()
-                , post.getCreatedAt(), post.getModifiedAt(), likeCount, post.getViewCount(), post.getCategory().getCateName());
+                , post.getCreatedAt(), post.getModifiedAt(), post.getCategory().getCateName(), likeCheck, likeCount, viewCount, commentCount);
     }
 
     // 게시글 수정
