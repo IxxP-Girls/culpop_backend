@@ -7,4 +7,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CommentLikeMapper {
     void insertCommentLike(CommentLike commentLike);
     boolean checkCommentLike(int userId, int commentId);
+    void deleteCommentLike(CommentLike commentLike);
 }
