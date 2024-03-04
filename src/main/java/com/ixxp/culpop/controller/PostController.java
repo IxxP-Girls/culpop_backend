@@ -122,4 +122,24 @@ public class PostController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "comment 삭제 완료");
         return ResponseEntity.ok(statusResponse);
     }
+
+    // 댓글 좋아요
+    @PostMapping("/{postId}/comments/{commentId}/like")
+    public ResponseEntity<StatusResponse> likeComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                    @PathVariable int postId,
+                                                      @PathVariable int commentId) {
+        commentService.likeComment(userDetails.getUser(), postId, commentId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.CREATED.value(), "comment 좋아요 완료");
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusResponse);
+    }
+
+    // 댓글 좋아요 취소
+    @DeleteMapping("/{postId}/comments/{commentId}/like")
+    public ResponseEntity<StatusResponse> unlikeComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @PathVariable int postId,
+                                                      @PathVariable int commentId) {
+        commentService.unlikeComment(userDetails.getUser(), postId, commentId);
+        StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "comment 좋아요 취소 완료");
+        return ResponseEntity.ok(statusResponse);
+    }
 }

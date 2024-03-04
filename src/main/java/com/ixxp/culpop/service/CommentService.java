@@ -2,8 +2,10 @@ package com.ixxp.culpop.service;
 
 import com.ixxp.culpop.dto.post.CommentRequest;
 import com.ixxp.culpop.entity.Comment;
+import com.ixxp.culpop.entity.CommentLike;
 import com.ixxp.culpop.entity.Post;
 import com.ixxp.culpop.entity.User;
+import com.ixxp.culpop.mapper.CommentLikeMapper;
 import com.ixxp.culpop.mapper.CommentMapper;
 import com.ixxp.culpop.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
+    private final CommentLikeMapper commentLikeMapper;
 
     // 댓글 등록
     @Transactional
@@ -74,5 +77,55 @@ public class CommentService {
         }
 
         commentMapper.deleteComment(commentId);
+    }
+
+    // 팝업 좋아요
+    @Transactional
+    public void likeComment(User user, int postId, int commentId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        Comment comment = commentMapper.selectCommentDetail(commentId);
+        if (comment == null) {
+            throw new IllegalArgumentException("comment가 존재하지 않습니다.");
+        }
+
+        if (comment.getPost().getId() != postId) {
+            throw new IllegalArgumentException("post를 잘못 입력하였습니다.");
+        }
+
+        if (commentLikeMapper.checkCommentLike(user.getId(), commentId)) {
+            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+        }
+
+        CommentLike commentLike = new CommentLike(user, comment);
+        commentLikeMapper.insertCommentLike(commentLike);
+    }
+
+    // 댓글 좋아요 취소
+    @Transactional
+    public void unlikeComment(User user, int postId, int commentId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+        }
+
+        Comment comment = commentMapper.selectCommentDetail(commentId);
+        if (comment == null) {
+            throw new IllegalArgumentException("comment가 존재하지 않습니다.");
+        }
+
+        if (comment.getPost().getId() != postId) {
+            throw new IllegalArgumentException("post를 잘못 입력하였습니다.");
+        }
+
+        if (!commentLikeMapper.checkCommentLike(user.getId(), commentId)) {
+            throw new IllegalArgumentException("댓글 좋아요를 누르지 않았습니다.");
+        }
+
+        CommentLike commentLike = new CommentLike(user, comment);
+        commentLikeMapper.deleteCommentLike(commentLike);
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ixxp.culpop.mapper.CommentLikeMapper">
+    <insert id="insertCommentLike" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO CommentLike (userId, commentId) VALUES (#{user.id}, #{comment.id})
+    </insert>
+    <select id="checkCommentLike" parameterType="int" resultType="boolean">
+        SELECT IF(COUNT(*) = 1, 1, 0) FROM CommentLike WHERE userId=#{userId} and commentId=#{commentId}
+    </select>
+    <delete id="deleteCommentLike">
+        DELETE FROM CommentLike WHERE userId =#{user.id} and commentId=#{comment.id}
+    </delete>
+</mapper>
