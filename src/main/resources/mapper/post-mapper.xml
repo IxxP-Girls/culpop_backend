@@ -74,6 +74,12 @@
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
         ORDER BY p.createdAt
     </select>
+    <select id="selectPostViewCount" parameterType="int" resultType="int">
+        SELECT viewCount FROM Post WHERE id = #{postId};
+    </select>
+    <update id="updatePostViewCount" parameterType="int">
+        UPDATE Post SET viewCount = viewCount+1 WHERE id=#{postId}
+    </update>
     <update id="updatePost" parameterType="post">
         UPDATE Post SET title=#{title}, content=#{content}, categoryId=#{category.id}
         WHERE id=#{id}

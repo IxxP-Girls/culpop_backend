@@ -9,6 +9,9 @@
     <select id="checkPostLike" parameterType="int" resultType="boolean">
         SELECT IF(COUNT(*) = 1, 1, 0) FROM PostLike WHERE userId=#{userId} and postId=#{postId}
     </select>
+    <select id="countLikesByPostId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM PostLike WHERE postId = #{postId};
+    </select>
     <delete id="deletePostLike">
         DELETE FROM PostLike WHERE userId =#{user.id} and postId=#{post.id}
     </delete>

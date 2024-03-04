@@ -5,6 +5,7 @@ import com.ixxp.culpop.dto.post.CommentRequest;
 import com.ixxp.culpop.dto.post.PostDetailResponse;
 import com.ixxp.culpop.dto.post.PostRequest;
 import com.ixxp.culpop.dto.post.PostResponse;
+import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.CommentService;
 import com.ixxp.culpop.service.PostService;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,8 +43,10 @@ public class PostController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailResponse> getPostDetail(@PathVariable int postId) {
-        return ResponseEntity.ok(postService.getPostDetail(postId));
+    public ResponseEntity<PostDetailResponse> getPostDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @PathVariable int postId) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return ResponseEntity.ok(postService.getPostDetail(user, postId));
     }
 
     // 게시글 수정

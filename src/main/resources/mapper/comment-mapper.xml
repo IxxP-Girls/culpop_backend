@@ -30,6 +30,9 @@
         GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username, p.id
         ORDER BY c.createdAt;
     </select>
+    <select id="countCommentsByPostId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM Comment WHERE postId = #{postId};
+    </select>
     <update id="updateComment" parameterType="Comment">
         UPDATE Comment SET content=#{content}, secret=#{secret}, parentId=#{parentId}
         WHERE id=#{id}
