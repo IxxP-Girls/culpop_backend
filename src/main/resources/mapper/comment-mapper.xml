@@ -27,8 +27,7 @@
         LEFT JOIN User u ON c.userId = u.id
         LEFT JOIN Post p on c.postId = p.id
         WHERE c.id=#{commentId}
-        GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username, p.id
-        ORDER BY c.createdAt;
+        GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username, p.id;
     </select>
     <select id="selectComment" parameterType="int" resultMap="commentResult">
         SELECT c.id, c.content, c.secret, c.parentId, c.createdAt, u.id AS userId, u.username
