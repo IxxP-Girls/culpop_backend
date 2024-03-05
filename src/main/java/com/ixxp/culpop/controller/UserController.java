@@ -59,8 +59,9 @@ public class UserController {
     // 프로필 관심 팝업 조회
     @GetMapping("/profile/popupLike")
     public ResponseEntity<List<PopupResponse>> getProfilePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                               @RequestParam("sort") String sort) {
-        List<PopupResponse> popupResponses = userService.getProfilePopup(userDetails.getUser(), sort);
+                                                               @RequestParam("sort") String sort,
+                                                               @RequestParam(name = "page", defaultValue = "1") int page) {
+        List<PopupResponse> popupResponses = userService.getProfilePopup(userDetails.getUser(), sort, page);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 }

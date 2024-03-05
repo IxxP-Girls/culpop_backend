@@ -102,8 +102,9 @@ public class UserService {
 
     // 프로필 관심 팝업 조회
     @Transactional
-    public List<PopupResponse> getProfilePopup(User user, String sort) {
-        List<Popup> popups = popupMapper.selectProfilePopup(user, sort);
+    public List<PopupResponse> getProfilePopup(User user, String sort, int page) {
+        int offset = (page - 1) * 10;
+        List<Popup> popups = popupMapper.selectProfilePopup(user, sort, offset);
         return popupService.convertToPopupResponseList(user,popups);
     }
 }
