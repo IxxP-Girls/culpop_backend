@@ -91,9 +91,10 @@ public class UserService {
     }
 
     // 프로필 조회
-    public ProfileResponse getProfile(int userId) {
+    public ProfileResponse getProfile(int userId, int page) {
+        int offset = (page - 1) * 5;
         User user = userMapper.getProfile(userId);
-        List<Post> posts = postMapper.selectPostByUserId(userId);
+        List<Post> posts = postMapper.selectPostByUserId(userId, offset);
         List<PostResponse> postList = posts.stream().map(post ->
                 new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
         ).collect(Collectors.toList());

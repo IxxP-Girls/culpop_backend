@@ -51,8 +51,9 @@ public class UserController {
 
     // 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId());
+    public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @RequestParam(name = "page", defaultValue = "1") int page) {
+        ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId(), page);
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 

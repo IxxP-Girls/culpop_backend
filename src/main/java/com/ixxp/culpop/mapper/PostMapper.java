@@ -11,7 +11,7 @@ public interface PostMapper {
     List<Post> selectPost(String category, int offset);
     Post selectPostDetail(int postId);
     List<Post> selectSearchPost(String word, int offset);
-    List<Post> selectPostByUserId(int userId);
+    List<Post> selectPostByUserId(int userId, int offset);
     int selectPostViewCount(int postId);
     void updatePostViewCount(int postId);
     void updatePost(Post post);

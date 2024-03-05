@@ -73,6 +73,7 @@
         WHERE p.userId=#{userId}
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
         ORDER BY p.createdAt
+        LIMIT 5 OFFSET #{offset};
     </select>
     <select id="selectPostViewCount" parameterType="int" resultType="int">
         SELECT viewCount FROM Post WHERE id = #{postId};
