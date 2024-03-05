@@ -92,11 +92,6 @@
         ORDER BY p.endDate
         LIMIT 10 OFFSET #{offset};
     </select>
-    <select id="selectPopupDetail" parameterType="int" resultMap="popupDetail">
-        SELECT * FROM Popup p
-        LEFT JOIN Store s ON p.storeId = s.id
-        WHERE p.id=#{id}
-    </select>
     <select id="selectProfilePopup" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image, pl.userId
         FROM Popup p
@@ -111,7 +106,8 @@
             END = 1)
             AND pl.userId = #{user.id}
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image, pl.userId
-        ORDER BY p.endDate;
+        ORDER BY p.endDate
+        LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectSearchPopup" resultMap="popupResult">
         SELECT p.id, p.title, p.address, p.startDate, p.endDate, s.id AS storeId, s.storeName, s.image

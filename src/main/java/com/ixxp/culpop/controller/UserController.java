@@ -51,16 +51,18 @@ public class UserController {
 
     // 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId());
+    public ResponseEntity<ProfileResponse> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @RequestParam(name = "page", defaultValue = "1") int page) {
+        ProfileResponse profileResponse = userService.getProfile(userDetails.getUser().getId(), page);
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 
     // 프로필 관심 팝업 조회
     @GetMapping("/profile/popupLike")
     public ResponseEntity<List<PopupResponse>> getProfilePopup(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                               @RequestParam("sort") String sort) {
-        List<PopupResponse> popupResponses = userService.getProfilePopup(userDetails.getUser(), sort);
+                                                               @RequestParam("sort") String sort,
+                                                               @RequestParam(name = "page", defaultValue = "1") int page) {
+        List<PopupResponse> popupResponses = userService.getProfilePopup(userDetails.getUser(), sort, page);
         return new ResponseEntity<>(popupResponses, HttpStatus.OK);
     }
 }

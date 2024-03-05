@@ -13,7 +13,7 @@ public interface PopupMapper {
     List<Popup> selectPopupMain(String date);
     List<Popup> selectCarousel();
     List<Popup> selectPopupList(String area,String startDate, String endDate, int offset);
-    List<Popup> selectProfilePopup(User user, String sort);
+    List<Popup> selectProfilePopup(User user, String sort, int offset);
     List<Popup> selectSearchPopup(String word, int offset);
     int selectViewCount(int popupId);
     void updateViewCount(int popupId);
