@@ -1,10 +1,7 @@
 package com.ixxp.culpop.controller;
 
 import com.ixxp.culpop.dto.StatusResponse;
-import com.ixxp.culpop.dto.post.CommentRequest;
-import com.ixxp.culpop.dto.post.PostDetailResponse;
-import com.ixxp.culpop.dto.post.PostRequest;
-import com.ixxp.culpop.dto.post.PostResponse;
+import com.ixxp.culpop.dto.post.*;
 import com.ixxp.culpop.entity.User;
 import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.CommentService;
@@ -105,6 +102,13 @@ public class PostController {
     }
 
     // 댓글 조회
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<CommentResponse>> getComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                            @PathVariable int postId,
+                                                            @RequestParam(name = "page", defaultValue = "1") int page) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return ResponseEntity.ok(commentService.getComment(user, postId, page));
+    }
 
     // 댓글 수정
     @PatchMapping("/{postId}/comments/{commentId}")

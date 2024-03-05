@@ -30,6 +30,23 @@
         GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username, p.id
         ORDER BY c.createdAt;
     </select>
+    <select id="selectComment" parameterType="int" resultMap="commentResult">
+        SELECT c.id, c.content, c.secret, c.parentId, c.createdAt, u.id AS userId, u.username
+        FROM Comment c
+        LEFT JOIN User u ON c.userId = u.id
+        WHERE c.postId=#{postId}
+        GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username
+        ORDER BY c.createdAt
+        LIMIT 10 OFFSET #{offset};
+    </select>
+    <select id="selectCommentByParentId" parameterType="int" resultMap="commentResult">
+        SELECT c.id, c.content, c.secret, c.parentId, c.createdAt, u.id AS userId, u.username
+        FROM Comment c
+        LEFT JOIN User u ON c.userId = u.id
+        WHERE c.parentId=#{commentId}
+        GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username
+        ORDER BY c.createdAt;
+    </select>
     <select id="countCommentsByPostId" parameterType="int" resultType="int">
         SELECT COUNT(*) FROM Comment WHERE postId = #{postId};
     </select>
