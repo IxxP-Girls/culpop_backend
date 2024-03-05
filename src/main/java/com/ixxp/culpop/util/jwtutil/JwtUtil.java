@@ -4,6 +4,7 @@ import com.ixxp.culpop.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.WebUtils;
 
 import java.security.Key;
 import java.util.Base64;
@@ -21,10 +23,8 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String AUTHORIZATION_REFRESH = "RefreshToken"; // 리프레시 토큰 Header 키
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer "; // 액세스 토큰 식별자 (7자)
-    public static final String REFRESH_PREFIX = "Refresh "; // 리프레시 토큰 식별자 (8자)
     public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
     public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
@@ -48,13 +48,13 @@ public class JwtUtil {
         return null;
     }
 
-    // header Refresh 토큰을 가져오기
+    // cookie Refresh 토큰을 가져오기
     public String getRefreshToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_REFRESH);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(REFRESH_PREFIX)) {
-            return bearerToken.substring(8);
-        }
-        return null;
+        String refreshToken = null;
+        Cookie cookie = WebUtils.getCookie(request, "RefreshToken");
+        if (cookie != null)
+            refreshToken = cookie.getValue();
+        return refreshToken;
     }
 
     // 토큰 생성
@@ -78,7 +78,7 @@ public class JwtUtil {
 
     //refreshToken 생성
     public String createRefreshToken(String email, UserRoleEnum role) {
-        return createToken(email, role, REFRESH_TOKEN_TIME, REFRESH_PREFIX);
+        return createToken(email, role, REFRESH_TOKEN_TIME, "");
     }
 
     // admin token 생성

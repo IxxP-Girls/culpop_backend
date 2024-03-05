@@ -14,8 +14,11 @@ import com.ixxp.culpop.mapper.PopupMapper;
 import com.ixxp.culpop.mapper.PostMapper;
 import com.ixxp.culpop.mapper.UserMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,9 +71,18 @@ public class UserService {
         String accessToken = jwtUtil.createAccessToken(email, user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(email, user.getRole());
 
-        // Header 로 토큰 반환
+        // Header 로 accessToken 반환
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, refreshToken);
+
+        // Cookie 로 refreshToken 반환
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
+                .maxAge(7 * 24 * 60 * 60)
+                .path("/")
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     // 프로필 수정
