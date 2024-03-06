@@ -31,6 +31,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // verify API 에 대해서는 필터를 실행하지 않도록 설정
+        String requestURI = request.getRequestURI();
+        if (requestURI.equals("/users/verify")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = jwtUtil.getAccessToken(request);
         String refreshToken = jwtUtil.getRefreshToken(request);
 
@@ -91,7 +98,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     public void jwtExceptionHandler(HttpServletResponse response, String msg, int statusCode) {
         response.setStatus(statusCode);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=UTF-8");
         try {
             String json = new ObjectMapper().writeValueAsString(new SecurityExceptionDto(statusCode, msg));
             response.getWriter().write(json);

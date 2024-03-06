@@ -116,7 +116,7 @@
         LEFT JOIN Store s ON p.storeId = s.id
         <!--    word: 검색 가능 컬럼 : title, address, tagName    -->
         WHERE (p.title LIKE CONCAT('%', #{word}, '%') OR p.address LIKE CONCAT('%', #{word}, '%') OR
-        EXISTS (SELECT 1 FROM popupTag pt JOIN tag t ON pt.tagId = t.id WHERE pt.popupId = p.id AND t.tagName LIKE CONCAT('%', #{word}, '%')))
+        EXISTS (SELECT 1 FROM PopupTag pt JOIN Tag t ON pt.tagId = t.id WHERE pt.popupId = p.id AND t.tagName LIKE CONCAT('%', #{word}, '%')))
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY p.endDate
         LIMIT 10 OFFSET #{offset};
