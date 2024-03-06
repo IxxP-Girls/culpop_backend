@@ -8,8 +8,12 @@ import com.ixxp.culpop.dto.user.UserLoginRequest;
 import com.ixxp.culpop.dto.user.UserSignupRequest;
 import com.ixxp.culpop.security.UserDetailsImpl;
 import com.ixxp.culpop.service.UserService;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     // 회원가입
     @PostMapping("/signup")
@@ -38,6 +43,15 @@ public class UserController {
         StatusResponse statusResponse = new StatusResponse(HttpStatus.OK.value(), "로그인 성공");
         userService.login(userLoginRequest, response);
         return new ResponseEntity<>(statusResponse, HttpStatus.OK);
+    }
+
+    // 로그인 확인
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyLogin(HttpServletRequest request) {
+        String token = jwtUtil.getRefreshToken(request);
+        boolean isLogin = token != null && jwtUtil.validateToken(token);
+
+        return ResponseEntity.ok("{\"isLogin\": " + isLogin + "}");
     }
 
     // 프로필 수정
