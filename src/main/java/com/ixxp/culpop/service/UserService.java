@@ -77,6 +77,7 @@ public class UserService {
 
         // Cookie 로 refreshToken 반환
         ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
+                .maxAge(7 * 24 * 60 * 60)
                 .path("/")
                 .secure(true)
                 .sameSite("None")
