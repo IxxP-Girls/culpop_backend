@@ -73,6 +73,7 @@ public class JwtUtil {
         cookie.setMaxAge((int) (ACCESS_TOKEN_TIME / 1000)); // 초 단위로 설정
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+        cookie.setDomain(".culpop.shop");
         return cookie;
     }
     // admin token 생성
