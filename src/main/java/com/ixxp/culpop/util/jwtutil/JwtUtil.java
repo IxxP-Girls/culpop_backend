@@ -73,6 +73,7 @@ public class JwtUtil {
 
         return ResponseCookie.from("AccessToken", accessToken)
                 .path("/")
+                .maxAge(ACCESS_TOKEN_TIME/1000)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
