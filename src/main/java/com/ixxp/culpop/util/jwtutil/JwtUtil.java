@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
@@ -67,15 +68,16 @@ public class JwtUtil {
     }
 
     // accessToken 에서 Cookie 생성
-    public Cookie createAccessTokenCookie(String email, UserRoleEnum role) {
+    public ResponseCookie createAccessTokenCookie(String email, UserRoleEnum role) {
         String accessToken = createAccessToken(email, role);
-        Cookie cookie = new Cookie("AccessToken", accessToken);
-        cookie.setMaxAge((int) (ACCESS_TOKEN_TIME / 1000)); // 초 단위로 설정
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setDomain("culpop.shop");
-        return cookie;
+
+        return ResponseCookie.from("AccessToken", accessToken)
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .domain("culpop.shop")
+                .build();
     }
     // admin token 생성
     public String createAdminToken(String email, UserRoleEnum role) {
