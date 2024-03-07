@@ -8,6 +8,7 @@ import com.ixxp.culpop.mapper.AdminMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,11 +40,11 @@ public class AdminService {
 
         Admin admin = adminMapper.selectEmail(email);
         if (admin == null) {
-            throw new IllegalArgumentException("해당 email 이 존재하지 않습니다.");
+            throw new UsernameNotFoundException("해당 email 이 존재하지 않습니다.");
         }
 
         if (!passwordEncoder.matches(pwd, adminMapper.selectEmail(email).getPwd())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
         // accessToken 생성
