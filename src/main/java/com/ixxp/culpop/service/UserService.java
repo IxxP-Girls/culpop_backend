@@ -76,10 +76,21 @@ public class UserService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
 
         // Cookie 로 refreshToken 반환
-        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
+        Cookie cookie = new Cookie("RefreshToken", refreshToken);
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+/*        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
                 .path("/")
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
+                .domain(".culpop.shop")
                 .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.addHeader("Set-Cookie", cookie.toString());*/
     }
 
     // 프로필 수정
