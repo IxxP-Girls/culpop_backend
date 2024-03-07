@@ -68,29 +68,12 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // accessToken, refreshToken 생성
-        String accessToken = jwtUtil.createAccessToken(email, user.getRole());
-        String refreshToken = jwtUtil.createRefreshToken(email, user.getRole());
+        // accessToken 생성
 
-        // Header 로 accessToken 반환
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
 
-        // Cookie 로 refreshToken 반환
-        Cookie cookie = new Cookie("RefreshToken", refreshToken);
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        cookie.setPath("/");
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-
-/*        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
-                .path("/")
-                .secure(true)
-                .sameSite("None")
-                .httpOnly(true)
-                .domain(".culpop.shop")
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());*/
+        // Cookie 로 accessToken 반환
+        Cookie accessTokenCookie = jwtUtil.createAccessTokenCookie(email, user.getRole());
+        response.addCookie(accessTokenCookie);
     }
 
     // 프로필 수정

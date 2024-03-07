@@ -39,7 +39,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = jwtUtil.getAccessToken(request);
-        String refreshToken = jwtUtil.getRefreshToken(request);
 
         if(token != null) {
             if(!jwtUtil.validateToken(token)){
@@ -53,15 +52,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 Claims info = jwtUtil.getUserInfoFromToken(token);
                 setAuthentication(info.getSubject());
             }
-        }
-
-        if(refreshToken != null) {
-            if(!jwtUtil.validateToken(refreshToken)){
-                jwtExceptionHandler(response, "토큰 값이 유효하지 않습니다", HttpStatus.UNAUTHORIZED.value());
-                return;
-            }
-            Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
-            setAuthentication(info.getSubject());
         }
 
         filterChain.doFilter(request,response);

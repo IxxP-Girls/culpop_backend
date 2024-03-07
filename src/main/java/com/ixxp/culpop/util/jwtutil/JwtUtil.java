@@ -24,10 +24,8 @@ import java.util.Date;
 public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
-    public static final String BEARER_PREFIX = "Bearer "; // 액세스 토큰 식별자 (7자)
 //    public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
     public static final long ACCESS_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 24시간
-    public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -42,20 +40,11 @@ public class JwtUtil {
 
     // header Access 토큰을 가져오기
     public String getAccessToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-    // cookie Refresh 토큰을 가져오기
-    public String getRefreshToken(HttpServletRequest request) {
-        String refreshToken = null;
-        Cookie cookie = WebUtils.getCookie(request, "RefreshToken");
+        String accessToken = null;
+        Cookie cookie = WebUtils.getCookie(request, "AccessToken");
         if (cookie != null)
-            refreshToken = cookie.getValue();
-        return refreshToken;
+            accessToken = cookie.getValue();
+        return accessToken;
     }
 
     // 토큰 생성
@@ -74,17 +63,22 @@ public class JwtUtil {
 
     //accessToken 생성
     public String createAccessToken(String email, UserRoleEnum role) {
-        return createToken(email, role, ACCESS_TOKEN_TIME, BEARER_PREFIX);
+        return createToken(email, role, ACCESS_TOKEN_TIME, "");
     }
 
-    //refreshToken 생성
-    public String createRefreshToken(String email, UserRoleEnum role) {
-        return createToken(email, role, REFRESH_TOKEN_TIME, "");
+    // accessToken 에서 Cookie 생성
+    public Cookie createAccessTokenCookie(String email, UserRoleEnum role) {
+        String accessToken = createAccessToken(email, role);
+        Cookie cookie = new Cookie("AccessToken", accessToken);
+        cookie.setMaxAge((int) (ACCESS_TOKEN_TIME / 1000)); // 초 단위로 설정
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
-
     // admin token 생성
     public String createAdminToken(String email, UserRoleEnum role) {
-        return createToken(email, role, ACCESS_TOKEN_TIME, BEARER_PREFIX);
+        return createToken(email, role, ACCESS_TOKEN_TIME, "");
     }
     // 토큰 검증
     public boolean validateToken(String token) {
