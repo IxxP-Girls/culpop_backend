@@ -18,6 +18,7 @@ import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -73,8 +74,8 @@ public class UserService {
 
 
         // Cookie 로 accessToken 반환
-        Cookie accessTokenCookie = jwtUtil.createAccessTokenCookie(email, user.getRole());
-        response.addCookie(accessTokenCookie);
+        ResponseCookie accessTokenCookie = jwtUtil.createAccessTokenCookie(email, user.getRole());
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
         response.setHeader("Cache-Control", "public, max-age=86400");
         response.setHeader("Expires", "");
         response.setHeader("Pragma", "");
