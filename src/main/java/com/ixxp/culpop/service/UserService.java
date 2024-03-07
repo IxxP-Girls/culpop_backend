@@ -75,18 +75,9 @@ public class UserService {
         // Header 로 accessToken 반환
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
 
-        // Cache-Control 헤더 설정
-        String cacheControlHeader = "max-age=" + 7 * 24 * 60 * 60;
-        response.setHeader("Cache-Control", cacheControlHeader);
-
         // Cookie 로 refreshToken 반환
         ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
-                .maxAge(7 * 24 * 60 * 60)
                 .path("/")
-                .secure(true)
-                .sameSite("None")
-                .httpOnly(true)
-                .domain(".culpop.shop")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
