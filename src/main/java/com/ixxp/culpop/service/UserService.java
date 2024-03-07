@@ -81,6 +81,7 @@ public class UserService {
                 .secure(true)
                 .sameSite("None")
                 .httpOnly(true)
+                .domain(".culpop.shop")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
