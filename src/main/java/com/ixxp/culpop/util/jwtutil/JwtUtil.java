@@ -72,7 +72,6 @@ public class JwtUtil {
         Cookie cookie = new Cookie("AccessToken", accessToken);
         cookie.setMaxAge((int) (ACCESS_TOKEN_TIME / 1000)); // 초 단위로 설정
         cookie.setPath("/");
-        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         return cookie;
     }
