@@ -25,7 +25,8 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer "; // 액세스 토큰 식별자 (7자)
-    public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
+//    public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
+    public static final long ACCESS_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 24시간
     public static final long REFRESH_TOKEN_TIME = 14 * 24 * 60 * 60 * 1000L; // 14일
 
     @Value("${jwt.secret.key}")
