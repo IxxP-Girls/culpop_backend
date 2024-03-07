@@ -8,12 +8,15 @@ import com.ixxp.culpop.entity.*;
 import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -200,7 +203,7 @@ public class PopupService {
     private Popup getValidPopup(int popupId) {
         Popup popup = popupMapper.selectPopup(popupId);
         if (popup == null) {
-            throw new IllegalArgumentException("Popup이 존재하지 않습니다.");
+            throw new EntityNotFoundException("Popup이 존재하지 않습니다.");
         }
         return popup;
     }
@@ -243,7 +246,7 @@ public class PopupService {
 
     private void validateAdmin(Popup popup, Admin admin) {
         if (popup.getAdmin().getId() != admin.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+            throw new AccessDeniedException("작성자만 수정 가능합니다.");
         }
     }
 
@@ -270,13 +273,13 @@ public class PopupService {
 
     private void validatePopupLike(User user, int popupId) {
         if (popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
-            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+            throw new DuplicateKeyException("이미 좋아요를 눌렀습니다.");
         }
     }
 
     private void validatePopupUnlike(User user, int popupId) {
         if (!popupLikeMapper.checkPopupLike(user.getId(), popupId)) {
-            throw new IllegalArgumentException("팝업 좋아요를 누르지 않았습니다.");
+            throw new NoSuchElementException("팝업 좋아요를 누르지 않았습니다.");
         }
     }
 }

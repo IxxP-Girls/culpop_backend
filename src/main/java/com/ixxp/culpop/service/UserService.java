@@ -18,7 +18,8 @@ import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,11 +62,11 @@ public class UserService {
         User user = userMapper.selectEmail(email);
 
         if (user == null) {
-            throw new IllegalArgumentException("해당 email 이 존재하지 않습니다.");
+            throw new UsernameNotFoundException("해당 email 이 존재하지 않습니다.");
         }
 
         if (!passwordEncoder.matches(pwd, user.getPwd())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
         // accessToken 생성

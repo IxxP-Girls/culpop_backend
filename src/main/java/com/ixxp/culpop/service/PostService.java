@@ -12,10 +12,14 @@ import com.ixxp.culpop.mapper.CommentMapper;
 import com.ixxp.culpop.mapper.PostLikeMapper;
 import com.ixxp.culpop.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -54,7 +58,7 @@ public class PostService {
     public PostDetailResponse getPostDetail(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
-            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
         }
 
         boolean likeCheck = (user != null) && postLikeMapper.checkPostLike(user.getId(), postId);
@@ -74,11 +78,11 @@ public class PostService {
     public void updatePost(User user, int postId, PostRequest postRequest) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
-            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
         }
 
         if (post.getUser().getId() != user.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+            throw new AccessDeniedException("작성자만 수정 가능합니다.");
         }
 
         String cateName = postRequest.getCateName();
@@ -100,11 +104,11 @@ public class PostService {
     public void deletePopup(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
-            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
         }
 
         if (post.getUser().getId() != user.getId()) {
-            throw new IllegalArgumentException("작성자만 수정 가능합니다.");
+            throw new AccessDeniedException("작성자만 수정 가능합니다.");
         }
 
         postMapper.deletePost(postId);
@@ -115,10 +119,10 @@ public class PostService {
     public void likePost(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
-            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
         }
         if (postLikeMapper.checkPostLike(user.getId(), postId)) {
-            throw new IllegalArgumentException("이미 좋아요를 눌렀습니다.");
+            throw new DuplicateKeyException("이미 좋아요를 눌렀습니다.");
         }
 
         PostLike postLike = new PostLike(user, post);
@@ -130,10 +134,10 @@ public class PostService {
     public void unlikePost(User user, int postId) {
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
-            throw new IllegalArgumentException("post가 존재하지 않습니다.");
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
         }
         if (!postLikeMapper.checkPostLike(user.getId(), postId)) {
-            throw new IllegalArgumentException("좋아요를 누르지 않았습니다.");
+            throw new NoSuchElementException("좋아요를 누르지 않았습니다.");
         }
 
         PostLike postLike = new PostLike(user, post);
