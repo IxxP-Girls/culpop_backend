@@ -48,7 +48,7 @@ public class UserController {
     // 로그인 확인
     @GetMapping("/verify")
     public ResponseEntity<String> verifyLogin(HttpServletRequest request) {
-        String token = jwtUtil.getRefreshToken(request);
+        String token = jwtUtil.getAccessToken(request);
         boolean isLogin = token != null && jwtUtil.validateToken(token);
 
         return ResponseEntity.ok("{\"isLogin\": " + isLogin + "}");
