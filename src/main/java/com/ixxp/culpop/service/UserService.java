@@ -74,6 +74,9 @@ public class UserService {
         // Cookie 로 accessToken 반환
         Cookie accessTokenCookie = jwtUtil.createAccessTokenCookie(email, user.getRole());
         response.addCookie(accessTokenCookie);
+        response.setHeader("Cache-Control", "public, max-age=86400");
+        response.setHeader("Expires", "");
+        response.setHeader("Pragma", "");
     }
 
     // 프로필 수정
