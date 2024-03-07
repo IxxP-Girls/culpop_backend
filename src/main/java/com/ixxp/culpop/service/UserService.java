@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +77,7 @@ public class UserService {
 
         // Cookie 로 refreshToken 반환
         ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
-                .maxAge(7 * 24 * 60 * 60)
+                .maxAge(Duration.ofSeconds(7 * 24 * 60 * 60))
                 .path("/")
                 .secure(true)
                 .sameSite("None")
