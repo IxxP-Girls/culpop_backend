@@ -74,7 +74,7 @@ public class JwtUtil {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setDomain(".culpop.shop");
+        cookie.setDomain("culpop.shop");
         return cookie;
     }
     // admin token 생성
