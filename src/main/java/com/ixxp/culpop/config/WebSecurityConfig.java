@@ -64,6 +64,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
                 .allowedOrigins("http://localhost:8080", "http://localhost:5173/", "http://43.202.13.38:8081/", "https://www.culpop.shop/", "https://my.culpop.shop/", "https://a.culpop.vercel.app/")
                 .allowCredentials(true)
-                .exposedHeaders("Authorization", "RefreshToken");
+                .exposedHeaders("AccessToken");
     }
 }
