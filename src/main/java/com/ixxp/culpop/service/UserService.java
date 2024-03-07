@@ -76,12 +76,12 @@ public class UserService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
 
         // Cache-Control 헤더 설정
-        String cacheControlHeader = "no-cache, no-store";
+        String cacheControlHeader = "";
         if (!accessToken.isEmpty()) {
-            cacheControlHeader += ", max-age=0"; // accessToken에 대해서는 캐시를 사용하지 않음
+            cacheControlHeader += "no-cache, no-store, max-age=0"; // accessToken에 대해서는 캐시를 사용하지 않음
         }
         if (!refreshToken.isEmpty()) {
-            cacheControlHeader += ", max-age=" + 7 * 24 * 60 * 60; // refreshToken에 대해서는 캐시를 1시간 동안 유지
+            cacheControlHeader += "max-age=" + 7 * 24 * 60 * 60; // refreshToken에 대해서는 캐시를 1시간 동안 유지
         }
         response.setHeader("Cache-Control", cacheControlHeader);
 
