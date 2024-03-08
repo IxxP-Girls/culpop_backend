@@ -107,7 +107,7 @@
             END = 1)
             AND pl.userId = #{user.id}
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image, pl.userId
-        ORDER BY p.endDate
+        ORDER BY pl.id DESC
         LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectSearchPopup" resultMap="popupResult">
