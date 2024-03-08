@@ -80,7 +80,7 @@ public class UserService {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .domain("culpop.shop")
+//                .domain("culpop.shop")
                 .build();
         response.addHeader("Set-Cookie", cookie.toString());
     }
@@ -96,7 +96,7 @@ public class UserService {
         User user = userMapper.getProfile(userId);
         List<Post> posts = postMapper.selectPostByUserId(userId, offset);
         List<PostResponse> postList = posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
         return new ProfileResponse(user, postList);
     }
