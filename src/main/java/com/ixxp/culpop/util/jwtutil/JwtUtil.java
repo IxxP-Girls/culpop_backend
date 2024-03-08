@@ -26,7 +26,7 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
 //    public static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L; // 1시간
-    public static final long ACCESS_TOKEN_TIME = 24 * 60 * 60 * 1000L; // 24시간
+    public static final long ACCESS_TOKEN_TIME = 7* 24 * 60 * 60 * 1000L; // 7일
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -65,20 +65,6 @@ public class JwtUtil {
     //accessToken 생성
     public String createAccessToken(String email, UserRoleEnum role) {
         return createToken(email, role, ACCESS_TOKEN_TIME, "");
-    }
-
-    // accessToken 에서 Cookie 생성
-    public ResponseCookie createAccessTokenCookie(String email, UserRoleEnum role) {
-        String accessToken = createAccessToken(email, role);
-
-        return ResponseCookie.from("AccessToken", accessToken)
-                .path("/")
-                .maxAge(ACCESS_TOKEN_TIME/1000)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .domain("culpop.shop")
-                .build();
     }
 
     // admin token 생성
