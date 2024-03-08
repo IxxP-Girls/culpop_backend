@@ -76,6 +76,7 @@
         FROM Popup p
         LEFT JOIN PopupLike l ON p.id = l.popupId
         LEFT JOIN Store s ON p.storeId = s.id
+        WHERE CURDATE() BETWEEN p.startDate AND p.endDate
         GROUP BY p.id, p.title, p.address, p.startDate, p.endDate, s.id, s.storeName, s.image
         ORDER BY likeCount DESC
         LIMIT 6;
