@@ -71,14 +71,18 @@ public class UserService {
         }
 
         // accessToken 생성
-
+        String accessToken = jwtUtil.createAccessToken(email, user.getRole());
 
         // Cookie 로 accessToken 반환
-        ResponseCookie accessTokenCookie = jwtUtil.createAccessTokenCookie(email, user.getRole());
-        response.addHeader("Set-Cookie", accessTokenCookie.toString());
-        response.setHeader("Cache-Control", "public, max-age=86400");
-        response.setHeader("Expires", "");
-        response.setHeader("Pragma", "");
+        ResponseCookie cookie = ResponseCookie.from("AccessToken", accessToken)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60) // 7일
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .domain("culpop.shop")
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 
     // 프로필 수정
