@@ -41,12 +41,12 @@
         LEFT JOIN User u ON p.userId = u.id
         LEFT JOIN Category c ON p.categoryId = c.id
         <where>
-            <if test="category != 'all' and category != ''">
+            <if test="category != '전체' and category != ''">
                 cateName = #{category}
             </if>
         </where>
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
-        ORDER BY p.createdAt
+        ORDER BY p.createdAt DESC
         LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectPostDetail" parameterType="int" resultMap="postDetailResult">
@@ -62,7 +62,7 @@
         LEFT JOIN Category c ON p.categoryId = c.id
         WHERE p.title LIKE CONCAT('%', #{word}, '%')
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
-        ORDER BY p.createdAt
+        ORDER BY p.createdAt DESC
         LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectPostByUserId" parameterType="int" resultMap="postDetailResult">
@@ -72,7 +72,7 @@
         LEFT JOIN Category c ON p.categoryId = c.id
         WHERE p.userId=#{userId}
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
-        ORDER BY p.createdAt
+        ORDER BY p.createdAt DESC
         LIMIT 5 OFFSET #{offset};
     </select>
     <select id="selectPostViewCount" parameterType="int" resultType="int">

@@ -50,7 +50,7 @@ public class PostService {
         int offset = (page - 1) * 10;
         List<Post> posts = postMapper.selectPost(category, offset);
         return posts.stream().map(post ->
-             new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
+             new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
     }
 
@@ -149,7 +149,7 @@ public class PostService {
         int offset = (page - 1) * 10;
         List<Post> posts = postMapper.selectSearchPost(word, offset);
         return posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), post.getCreatedAt())
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
     }
 }

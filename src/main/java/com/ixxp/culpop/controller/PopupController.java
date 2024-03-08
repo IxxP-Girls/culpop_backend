@@ -48,7 +48,7 @@ public class PopupController {
     // ListPage 팝업 조회
     @GetMapping("/list")
     public ResponseEntity<List<PopupResponse>> getPopupList(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                            @RequestParam(name = "area", defaultValue = "all") String area,
+                                                            @RequestParam(name = "area", defaultValue = "전체") String area,
                                                             @RequestParam(name = "startDate", required = false) String startDate,
                                                             @RequestParam(name = "endDate", required = false) String endDate,
                                                             @RequestParam(name = "page", defaultValue = "1") int page){
