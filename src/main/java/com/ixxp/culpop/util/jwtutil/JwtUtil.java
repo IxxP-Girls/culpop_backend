@@ -77,9 +77,10 @@ public class JwtUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .domain("culpop.shop")
+                .domain("my.culpop.shop")
                 .build();
     }
+
     // admin token 생성
     public String createAdminToken(String email, UserRoleEnum role) {
         return createToken(email, role, ACCESS_TOKEN_TIME, "");
