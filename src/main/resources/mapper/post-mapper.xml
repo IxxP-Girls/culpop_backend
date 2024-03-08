@@ -41,7 +41,7 @@
         LEFT JOIN User u ON p.userId = u.id
         LEFT JOIN Category c ON p.categoryId = c.id
         <where>
-            <if test="category != 'all' and category != ''">
+            <if test="category != '전체' and category != ''">
                 cateName = #{category}
             </if>
         </where>
