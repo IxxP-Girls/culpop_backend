@@ -77,7 +77,7 @@ public class JwtUtil {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
-                .domain("my.culpop.shop")
+                .domain("culpop.shop")
                 .build();
     }
 
