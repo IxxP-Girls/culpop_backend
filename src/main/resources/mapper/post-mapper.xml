@@ -62,7 +62,7 @@
         LEFT JOIN Category c ON p.categoryId = c.id
         WHERE p.title LIKE CONCAT('%', #{word}, '%')
         GROUP BY p.id, p.title, p.createdAt, u.id, u.username, c.id, c.cateName
-        ORDER BY p.createdAt
+        ORDER BY p.createdAt DESC
         LIMIT 10 OFFSET #{offset};
     </select>
     <select id="selectPostByUserId" parameterType="int" resultMap="postDetailResult">
