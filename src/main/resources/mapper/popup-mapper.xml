@@ -99,9 +99,9 @@
         LEFT JOIN Store s ON p.storeId = s.id
         WHERE
             (CASE
-                WHEN NULLIF(#{sort}, '') IS NULL OR #{sort} = 'all' THEN 1
-                WHEN #{sort} = 'open' AND CURDATE() BETWEEN p.startDate AND p.endDate THEN 1
-                WHEN #{sort} = 'soon' AND CURDATE() &lt; p.startDate THEN 1
+                WHEN NULLIF(#{sort}, '') IS NULL OR #{sort} = '전체' THEN 1
+                WHEN #{sort} = '진행 중' AND CURDATE() BETWEEN p.startDate AND p.endDate THEN 1
+                WHEN #{sort} = '진행 예정' AND CURDATE() &lt; p.startDate THEN 1
                 ELSE 0
             END = 1)
             AND pl.userId = #{user.id}
