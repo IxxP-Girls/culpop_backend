@@ -8,6 +8,7 @@ import com.ixxp.culpop.mapper.AdminMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +51,15 @@ public class AdminService {
         // accessToken 생성
         String accessToken = jwtUtil.createAdminToken(email, admin.getRole());
 
-        // Header 로 토큰 반환
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        // Cookie 로 accessToken 반환
+        ResponseCookie cookie = ResponseCookie.from("AccessToken", accessToken)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60) // 7일
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+//                .domain("culpop.shop")
+                .build();
+        response.addHeader("Set-Cookie", cookie.toString());
     }
 }
