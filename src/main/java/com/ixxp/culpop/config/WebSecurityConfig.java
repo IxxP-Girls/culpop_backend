@@ -63,7 +63,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
                 .allowedOrigins("http://localhost:8080", "https://localhost:5173/", "http://43.202.13.38:8081/", "https://www.culpop.shop/", "https://my.culpop.shop/", "https://a.culpop.vercel.app/")
-                .allowedHeaders("Set-Cookie")
+                .allowedHeaders("Cookie")
                 .allowCredentials(true);
     }
 }
