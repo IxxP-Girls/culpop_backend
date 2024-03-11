@@ -19,5 +19,4 @@ public class CommentResponse {
     private LocalDateTime createdAt;
     private int likeCount;
     private boolean likeCheck;
-    private List<CommentResponse> children;
 }

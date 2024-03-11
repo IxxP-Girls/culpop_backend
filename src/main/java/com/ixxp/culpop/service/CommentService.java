@@ -41,7 +41,6 @@ public class CommentService {
 
     // 댓글 조회
     public List<CommentResponse> getComment(User user, int postId, int page) {
-        // 게시글 존재 확인
         Post post = postMapper.selectPostDetail(postId);
         if (post == null) {
             throw new EntityNotFoundException("post가 존재하지 않습니다.");
@@ -50,24 +49,14 @@ public class CommentService {
         // 게시글에 딸린 댓글 리스트 조회
         int offset = (page - 1) * 10;
         List<Comment> comments = commentMapper.selectComment(postId, offset);
-        return comments.stream().map(comment -> {
-            // user 있을 경우 좋아요 여부 보여주기 / 좋아요 안 만들어서 임시로 작성
+        return comments.stream()
+                .filter(comment -> comment.getParentId() == 0)
+                .map(comment -> {
             boolean likeCheck = (user != null) && commentLikeMapper.checkCommentLike(user.getId(), comment.getId());
             int likeCount = commentLikeMapper.countLikesByCommentId(comment.getId());
 
-            // 대댓글 보여주기
-            List<Comment> commentByParentId = commentMapper.selectCommentByParentId(comment.getId());
-            List<CommentResponse> children = commentByParentId.stream().map(comment1 -> {
-                // user 있을 경우 좋아요 여부 보여주기 / 좋아요 안 만들어서 임시로 작성
-                boolean likeCheck1 = (user != null) && commentLikeMapper.checkCommentLike(user.getId(), comment.getId());
-                int likeCount1 = commentLikeMapper.countLikesByCommentId(comment.getId());
-
-                return new CommentResponse(comment1.getId(), comment1.getParentId(), comment1.getUser().getUsername(), comment1.getContent(), comment1.isSecret(), comment1.getCreatedAt(), likeCount1, likeCheck1, null);
-            }).collect(Collectors.toList());
-
-            return new CommentResponse(comment.getId(), comment.getParentId(), comment.getUser().getUsername(), comment.getContent(), comment.isSecret(), comment.getCreatedAt(), likeCount, likeCheck, children);
+            return new CommentResponse(comment.getId(), comment.getParentId(), comment.getUser().getUsername(), comment.getContent(), comment.isSecret(), comment.getCreatedAt(), likeCount, likeCheck);
         }).collect(Collectors.toList());
-
     }
 
     // 댓글 수정
