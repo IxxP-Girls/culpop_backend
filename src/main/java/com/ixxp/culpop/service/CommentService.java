@@ -59,6 +59,23 @@ public class CommentService {
         }).collect(Collectors.toList());
     }
 
+    // 대댓글 조회
+    public List<CommentResponse> getReplyComment(User user, int postId, int parentId) {
+        Post post = postMapper.selectPostDetail(postId);
+        if (post == null) {
+            throw new EntityNotFoundException("post가 존재하지 않습니다.");
+        }
+
+        List<Comment> comments = commentMapper.selectCommentByParentId(parentId);
+        return comments.stream()
+                .map(comment -> {
+                    boolean likeCheck = (user != null) && commentLikeMapper.checkCommentLike(user.getId(), comment.getId());
+                    int likeCount = commentLikeMapper.countLikesByCommentId(comment.getId());
+
+                    return new CommentResponse(comment.getId(), comment.getParentId(), comment.getUser().getUsername(), comment.getContent(), comment.isSecret(), comment.getCreatedAt(), likeCount, likeCheck);
+                }).collect(Collectors.toList());
+    }
+
     // 댓글 수정
     @Transactional
     public void updateComment(User user, int postId, int commentId, CommentRequest commentRequest) {

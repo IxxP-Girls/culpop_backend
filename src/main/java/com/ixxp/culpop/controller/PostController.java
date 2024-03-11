@@ -110,6 +110,15 @@ public class PostController {
         return ResponseEntity.ok(commentService.getComment(user, postId, page));
     }
 
+    // 대댓글 조회
+    @GetMapping("/{postId}/comments/{parentId}")
+    public ResponseEntity<List<CommentResponse>> getReplyComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                @PathVariable int postId,
+                                                                 @PathVariable int parentId) {
+        User user = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).orElse(new User());
+        return ResponseEntity.ok(commentService.getReplyComment(user, postId, parentId));
+    }
+
     // 댓글 수정
     @PatchMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<StatusResponse> updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
