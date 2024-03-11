@@ -50,6 +50,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 .antMatchers("/admin/login").permitAll()
                                 .antMatchers(HttpMethod.GET,"/popup/**").permitAll()
                                 .antMatchers(HttpMethod.GET,"/posts/**").permitAll()
+                                .antMatchers(HttpMethod.OPTIONS, "/popup/**").permitAll()
                         .anyRequest().authenticated()
         );
 
