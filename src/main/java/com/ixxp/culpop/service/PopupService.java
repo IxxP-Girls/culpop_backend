@@ -9,6 +9,7 @@ import com.ixxp.culpop.mapper.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,6 +121,8 @@ public class PopupService {
     // 팝업 좋아요
     @Transactional
     public void likePopup(User user, int popupId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Access-Control-Allow-Methods","GET,POST,OPTIONS,DELETE,PUT");
         Popup popup = getValidPopup(popupId);
         validatePopupLike(user, popupId);
 
