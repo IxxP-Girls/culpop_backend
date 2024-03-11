@@ -121,8 +121,6 @@ public class PopupService {
     // 팝업 좋아요
     @Transactional
     public void likePopup(User user, int popupId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Access-Control-Allow-Methods","GET,POST,OPTIONS,DELETE,PUT");
         Popup popup = getValidPopup(popupId);
         validatePopupLike(user, popupId);
 
