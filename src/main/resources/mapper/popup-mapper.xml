@@ -29,6 +29,11 @@
         <result property="notice" column="notice" />
         <result property="storeUrl" column="storeUrl" />
         <result property="snsUrl" column="snsUrl" />
+        <result property="parking" column="parking" jdbcType="BIT" javaType="boolean"/>
+        <result property="fee" column="fee" jdbcType="BIT" javaType="boolean"/>
+        <result property="noKids" column="noKids" jdbcType="BIT" javaType="boolean"/>
+        <result property="pet" column="pet" jdbcType="BIT" javaType="boolean"/>
+        <result property="wifi" column="wifi" jdbcType="BIT" javaType="boolean"/>
 
         <association property="store" javaType="Store" resultMap="storeResult"/>
         <association property="admin" javaType="Admin" resultMap="adminResult"/>
