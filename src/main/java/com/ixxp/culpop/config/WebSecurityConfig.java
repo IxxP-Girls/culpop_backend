@@ -64,7 +64,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")
                 .allowedOrigins("http://localhost:8080", "https://localhost:5173", "http://43.202.13.38:8081", "https://www.culpop.shop", "https://my.culpop.shop", "https://a.culpop.vercel.app")
                 .allowedHeaders("Cookie")
-                .exposedHeaders("Access-Control-Request-Method")
+                .exposedHeaders("Access-Control-Allow-Methods")
                 .allowCredentials(true)
                 .maxAge(3600);
     }
