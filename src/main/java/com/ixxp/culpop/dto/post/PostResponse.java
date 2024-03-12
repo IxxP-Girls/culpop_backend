@@ -14,15 +14,17 @@ public class PostResponse {
     private String title;
     private String cateName;
     private int viewCount;
+    private int postCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    public PostResponse(int postId, String username, String title, String cateName, int viewCount, LocalDateTime createdAt) {
+    public PostResponse(int postId, String username, String title, String cateName, int viewCount, int postCount, LocalDateTime createdAt) {
         this.postId = postId;
         this.username = username;
         this.title = title;
         this.cateName = cateName;
         this.viewCount = viewCount;
+        this.postCount = postCount;
         this.createdAt = createdAt;
     }
 }
