@@ -75,6 +75,22 @@
         ORDER BY p.createdAt DESC
         LIMIT 5 OFFSET #{offset};
     </select>
+    <select id="selectCategoryPostCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM Post p
+        LEFT JOIN Category c ON p.categoryId = c.id
+        <where>
+            <if test="category != '전체' and category != ''">
+                cateName = #{category}
+            </if>
+        </where>
+    </select>
+    <select id="selectWordPostCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM Post p
+        WHERE p.title LIKE CONCAT('%', #{word}, '%')
+    </select>
+    <select id="selectUserPostCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM Post WHERE userId = #{userId}
+    </select>
     <select id="selectPostViewCount" parameterType="int" resultType="int">
         SELECT viewCount FROM Post WHERE id = #{postId};
     </select>

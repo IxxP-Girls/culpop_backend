@@ -33,7 +33,7 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping()
-    public ResponseEntity<List<PostResponse>> getPost(@RequestParam(name = "category", defaultValue = "전체") String category
+    public ResponseEntity<PostResponse> getPost(@RequestParam(name = "category", defaultValue = "전체") String category
                                                     , @RequestParam(name = "page", defaultValue = "1") int page) {
         return ResponseEntity.ok(postService.getPost(category, page));
     }
@@ -85,9 +85,9 @@ public class PostController {
 
     // 게시글 검색
     @GetMapping("/search")
-    public ResponseEntity<List<PostResponse>> getSearchPost(@RequestParam("word") String word,
+    public ResponseEntity<PostResponse> getSearchPost(@RequestParam("word") String word,
                                                             @RequestParam(name = "page", defaultValue = "1") int page) {
-        List<PostResponse> postResponses = postService.getSearchPost(word, page);
+        PostResponse postResponses = postService.getSearchPost(word, page);
         return ResponseEntity.ok(postResponses);
     }
 

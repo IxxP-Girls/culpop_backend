@@ -1,5 +1,6 @@
 package com.ixxp.culpop.dto.user;
 
+import com.ixxp.culpop.dto.post.PostList;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.entity.User;
 import lombok.Getter;
@@ -13,9 +14,9 @@ public class ProfileResponse {
     private int userId;
     private String username;
     private String email;
-    private List<PostResponse> postList;
+    private PostResponse postList;
 
-    public ProfileResponse(User user, List<PostResponse> postList) {
+    public ProfileResponse(User user, PostResponse postList) {
         this.userId = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
