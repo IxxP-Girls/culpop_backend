@@ -150,11 +150,13 @@ public class PostService {
     }
 
     // 게시글 검색
-    public List<PostResponse> getSearchPost(String word, int page) {
+    public PostResponse getSearchPost(String word, int page) {
         int offset = (page - 1) * 10;
         List<Post> posts = postMapper.selectSearchPost(word, offset);
-        return posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), posts.size(), post.getCreatedAt())
+        List<PostList> postList =   posts.stream().map(post ->
+                new PostList(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
+        int total = postMapper.selectWordPostCount(word);
+        return new PostResponse(postList, total);
     }
 }

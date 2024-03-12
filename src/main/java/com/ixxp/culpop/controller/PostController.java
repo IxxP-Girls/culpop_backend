@@ -85,9 +85,9 @@ public class PostController {
 
     // 게시글 검색
     @GetMapping("/search")
-    public ResponseEntity<List<PostResponse>> getSearchPost(@RequestParam("word") String word,
+    public ResponseEntity<PostResponse> getSearchPost(@RequestParam("word") String word,
                                                             @RequestParam(name = "page", defaultValue = "1") int page) {
-        List<PostResponse> postResponses = postService.getSearchPost(word, page);
+        PostResponse postResponses = postService.getSearchPost(word, page);
         return ResponseEntity.ok(postResponses);
     }
 

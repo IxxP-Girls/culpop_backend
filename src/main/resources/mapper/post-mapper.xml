@@ -84,6 +84,10 @@
             </if>
         </where>
     </select>
+    <select id="selectWordPostCount" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM Post p
+        WHERE p.title LIKE CONCAT('%', #{word}, '%')
+    </select>
     <select id="selectUserPostCount" parameterType="int" resultType="int">
         SELECT COUNT(*) FROM Post WHERE userId = #{userId}
     </select>
