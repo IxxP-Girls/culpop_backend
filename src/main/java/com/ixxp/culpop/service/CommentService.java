@@ -50,7 +50,6 @@ public class CommentService {
         int offset = (page - 1) * 10;
         List<Comment> comments = commentMapper.selectComment(postId, offset);
         return comments.stream()
-                .filter(comment -> comment.getParentId() == 0)
                 .map(comment -> {
             boolean likeCheck = (user != null) && commentLikeMapper.checkCommentLike(user.getId(), comment.getId());
             int likeCount = commentLikeMapper.countLikesByCommentId(comment.getId());

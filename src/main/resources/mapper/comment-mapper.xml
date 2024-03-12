@@ -33,7 +33,7 @@
         SELECT c.id, c.content, c.secret, c.parentId, c.createdAt, u.id AS userId, u.username
         FROM Comment c
         LEFT JOIN User u ON c.userId = u.id
-        WHERE c.postId=#{postId}
+        WHERE c.postId=#{postId} AND c.parentId = 0
         GROUP BY c.id, c.content, c.secret, c.parentId, c.createdAt, u.id, u.username
         ORDER BY c.createdAt
         LIMIT 10 OFFSET #{offset};
