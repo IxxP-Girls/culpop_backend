@@ -96,7 +96,7 @@ public class UserService {
         User user = userMapper.getProfile(userId);
         List<Post> posts = postMapper.selectPostByUserId(userId, offset);
         List<PostResponse> postList = posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), posts.size(), post.getCreatedAt())
         ).collect(Collectors.toList());
         return new ProfileResponse(user, postList);
     }
