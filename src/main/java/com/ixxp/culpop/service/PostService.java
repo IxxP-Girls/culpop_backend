@@ -2,7 +2,9 @@ package com.ixxp.culpop.service;
 
 import com.ixxp.culpop.dto.post.PostDetailResponse;
 import com.ixxp.culpop.dto.post.PostRequest;
+import com.ixxp.culpop.dto.post.PostList;
 import com.ixxp.culpop.dto.post.PostResponse;
+import com.ixxp.culpop.dto.user.ProfileResponse;
 import com.ixxp.culpop.entity.Category;
 import com.ixxp.culpop.entity.Post;
 import com.ixxp.culpop.entity.PostLike;
@@ -46,12 +48,15 @@ public class PostService {
     }
 
     // 게시글 전체 조회
-    public List<PostResponse> getPost(String category, int page) {
+    public PostResponse getPost(String category, int page) {
         int offset = (page - 1) * 10;
         List<Post> posts = postMapper.selectPost(category, offset);
-        return posts.stream().map(post ->
-             new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), posts.size(), post.getCreatedAt())
+        List<PostList> postList =  posts.stream().map(post ->
+             new PostList(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
+
+        int total = postMapper.selectCategoryPostCount(category);
+        return new PostResponse(postList, total);
     }
 
     // 게시글 개별 조회
