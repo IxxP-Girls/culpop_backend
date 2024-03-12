@@ -149,7 +149,7 @@ public class PostService {
         int offset = (page - 1) * 10;
         List<Post> posts = postMapper.selectSearchPost(word, offset);
         return posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
+                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), posts.size(), post.getCreatedAt())
         ).collect(Collectors.toList());
     }
 }
