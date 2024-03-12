@@ -1,6 +1,7 @@
 package com.ixxp.culpop.service;
 
 import com.ixxp.culpop.dto.popup.PopupResponse;
+import com.ixxp.culpop.dto.post.PostList;
 import com.ixxp.culpop.dto.post.PostResponse;
 import com.ixxp.culpop.dto.user.ProfileResponse;
 import com.ixxp.culpop.dto.user.ProfileUpdateRequest;
@@ -15,7 +16,6 @@ import com.ixxp.culpop.mapper.PostMapper;
 import com.ixxp.culpop.mapper.UserMapper;
 import com.ixxp.culpop.util.jwtutil.JwtUtil;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -25,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,11 +93,16 @@ public class UserService {
     public ProfileResponse getProfile(int userId, int page) {
         int offset = (page - 1) * 5;
         User user = userMapper.getProfile(userId);
+
         List<Post> posts = postMapper.selectPostByUserId(userId, offset);
-        List<PostResponse> postList = posts.stream().map(post ->
-                new PostResponse(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), posts.size(), post.getCreatedAt())
+        List<PostList> postList = posts.stream().map(post ->
+                new PostList(post.getId(), post.getUser().getUsername(), post.getTitle(), post.getCategory().getCateName(), postMapper.selectPostViewCount(post.getId()), post.getCreatedAt())
         ).collect(Collectors.toList());
-        return new ProfileResponse(user, postList);
+
+        int total = postMapper.selectUserPostCount(userId);
+        PostResponse postResponse = new PostResponse(postList, total);
+
+        return new ProfileResponse(user, postResponse);
     }
 
     // 프로필 관심 팝업 조회

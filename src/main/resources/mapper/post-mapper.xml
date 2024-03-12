@@ -75,6 +75,9 @@
         ORDER BY p.createdAt DESC
         LIMIT 5 OFFSET #{offset};
     </select>
+    <select id="selectUserPostCount" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM Post WHERE userId = #{userId}
+    </select>
     <select id="selectPostViewCount" parameterType="int" resultType="int">
         SELECT viewCount FROM Post WHERE id = #{postId};
     </select>
